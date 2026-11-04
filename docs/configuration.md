@@ -74,7 +74,7 @@ Only package names are sent to PyPI, never your code.
 
 | Key | Default | Meaning |
 | --- | --- | --- |
-| `private` | `[]` | Import names that come from a private index or are generated. All HAL rules skip them. |
+| `private` | `[]` | Import names the HAL rules should trust: packages from a private index, generated modules, or a deliberate look-alike of a popular name. All HAL rules skip them. |
 
 ```toml
 [packages]

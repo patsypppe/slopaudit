@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-__version__ = "1.0.0rc1"
+__version__ = "1.0.0rc2"
 
 if TYPE_CHECKING:
     from slopguard.api import Config, Finding, ScanResult, Severity, scan, scan_source

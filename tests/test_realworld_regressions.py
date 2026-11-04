@@ -120,3 +120,42 @@ def test_unknown_imports_in_optional_places_are_medium_not_high(scan):
     assert found["ghostlib_top"].severity.label == "high" and found["ghostlib_top"].confidence > 0.8
     for name in ("ghostlib_lazy", "ghostlib_guarded", "ghostlib_types"):
         assert found[name].severity.label == "medium" and found[name].confidence <= 0.5
+
+
+# -- found by running slopguard on a real project (an agent with fixtures and a Postgres store) --
+
+
+def test_a_fixture_importing_its_own_package_is_local(scan):
+    files = {
+        "pyproject.toml": '[project]\nname = "x"\nversion = "0"\ndependencies = ["requests"]\n',
+        "fixtures/checkout_agent/agent.py": "from checkout_agent.tools import TOOLS\nfrom fixtures import helpers\n",
+        "fixtures/checkout_agent/tools.py": "TOOLS = []\n",
+        "fixtures/helpers.py": "X = 1\n",
+    }
+    found = scan(files, rule_ids=("HAL-01", "HAL-04"), network=True)
+    assert [f for f in found if f.path == "fixtures/checkout_agent/agent.py"] == []
+
+
+def test_a_manifest_next_to_the_code_counts(scan):
+    files = {
+        "requirements.txt": "requests\n",
+        "fixtures/app/pyproject.toml": '[project]\nname = "app"\nversion = "0"\ndependencies = ["langgraph"]\n',
+        "fixtures/app/agent.py": "import langgraph\n",
+        "other.py": "import langgraph\n",
+    }
+    found = scan(files, rule_ids=("HAL-04",))
+    assert [f.path for f in found] == ["other.py"]  # declared for fixtures/app, not for the rest
+
+
+def test_psycopg_is_not_a_typo_of_psycopg2(scan):
+    assert scan({"a.py": "import psycopg\nfrom pydantic_core import ErrorDetails\n"}, rule_ids=("HAL-03",)) == []
+
+
+def test_a_credential_named_like_test_data_is_low_severity(scan):
+    key = "sk-ant-" + "Ab3dE6gH9jK2mN5pQ8sT1vW4yZ7cF0hJ3kL6"
+    source = f'FAKE_KEY = "{key}"\nTEST_API_KEY = "{key}"\nAPI_KEY = "{key}"\nlatest_token = "{key}"\n'
+    found = {f.line: f for f in scan({"a.py": source}, rule_ids=("SEC-01",))}
+    assert found[1].severity.label == "low" and found[2].severity.label == "low"
+    assert "named like test data" in found[1].message
+    assert found[3].severity.label == "critical"   # a normal name stays critical
+    assert found[4].severity.label == "critical"   # "latest" must not read as "test"

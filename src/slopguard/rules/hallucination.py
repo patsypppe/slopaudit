@@ -183,7 +183,7 @@ class UndeclaredDependency(Rule):
     )
 
     def check(self, ctx: FileContext) -> Iterable[Finding]:
-        declared = ctx.project.declared
+        declared = ctx.project.declared_for(ctx.path)
         if ctx.tree is None or declared is None:
             return
         for root, line, guarded in iter_imports(ctx.tree):
@@ -203,7 +203,10 @@ class UndeclaredDependency(Rule):
 
 
 POPULAR_PACKAGES = frozenset(
-    ["requests", "numpy", "pandas", "scipy", "matplotlib", "flask", "django", "fastapi", "pydantic", "sqlalchemy", "pytest", "boto3", "botocore", "urllib3", "setuptools", "certifi", "idna", "charset-normalizer", "cryptography", "pyyaml", "jinja2", "click", "aiohttp", "httpx", "beautifulsoup4", "lxml", "pillow", "scikit-learn", "tensorflow", "torch", "transformers", "openai", "anthropic", "langchain", "tqdm", "typer", "uvicorn", "gunicorn", "redis", "celery", "psycopg2", "pymongo", "openpyxl", "attrs", "packaging", "python-dateutil", "pytz", "colorama", "protobuf", "grpcio", "numba", "seaborn", "plotly", "streamlit", "gradio", "sentencepiece", "tokenizers", "datasets", "accelerate", "huggingface-hub", "langchain-core", "llama-index", "chromadb", "faiss-cpu", "tiktoken", "pytest-cov", "black", "flake8", "mypy", "ruff", "isort", "pylint", "pre-commit", "poetry", "selenium", "scrapy", "paramiko", "pexpect", "websockets", "orjson", "ujson", "markdown", "pygments", "sphinx", "docutils", "jsonschema", "regex", "sympy", "networkx", "xgboost", "lightgbm", "opencv-python", "keras", "nltk", "spacy", "gensim", "python-dotenv"]
+    ["requests", "numpy", "pandas", "scipy", "matplotlib", "flask", "django", "fastapi", "pydantic", "sqlalchemy", "pytest", "boto3", "botocore", "urllib3", "setuptools", "certifi", "idna", "charset-normalizer", "cryptography", "pyyaml", "jinja2", "click", "aiohttp", "httpx", "beautifulsoup4", "lxml", "pillow", "scikit-learn", "tensorflow", "torch", "transformers", "openai", "anthropic", "langchain", "tqdm", "typer", "uvicorn", "gunicorn", "redis", "celery", "psycopg2", "pymongo", "openpyxl", "attrs", "packaging", "python-dateutil", "pytz", "colorama", "protobuf", "grpcio", "numba", "seaborn", "plotly", "streamlit", "gradio", "sentencepiece", "tokenizers", "datasets", "accelerate", "huggingface-hub", "langchain-core", "llama-index", "chromadb", "faiss-cpu", "tiktoken", "pytest-cov", "black", "flake8", "mypy", "ruff", "isort", "pylint", "pre-commit", "poetry", "selenium", "scrapy", "paramiko", "pexpect", "websockets", "orjson", "ujson", "markdown", "pygments", "sphinx", "docutils", "jsonschema", "regex", "sympy", "networkx", "xgboost", "lightgbm", "opencv-python", "keras", "nltk", "spacy", "gensim", "python-dotenv",
+     # legitimate neighbours of popular names: not typosquats
+     "psycopg", "psycopg-binary", "pydantic-core", "pydantic-settings", "pytest-asyncio", "asyncpg",
+     "aiofiles", "uvloop", "python-multipart"]
 )
 
 
@@ -253,7 +256,7 @@ class NewbornPackage(Rule):
             candidates = third_party_candidates(ctx, root)
             if candidates is None or root in ctx.project.installed:
                 continue
-            declared = ctx.project.declared or set()
+            declared = ctx.project.declared_for(ctx.path) or set()
             for name in candidates:
                 if normalize(name) in declared or registry.exists(name) is not True:
                     continue

@@ -39,6 +39,9 @@ MIN_ENTROPY = 3.0
 NON_SECRET_NAME = re.compile(
     r"(?i)(_env|_env_var|_name|_header|_field|_prefix|_path|_url|_type|_file|_param|_attr|_label)$"
 )
+TEST_WORDS = frozenset(
+    {"fake", "dummy", "mock", "stub", "sample", "fixture", "placeholder", "test", "tests", "example", "demo"}
+)
 BASE64_BODY = re.compile(r"[A-Za-z0-9+/=]{40,}")
 SYMBOLS = frozenset("!@#$%^&*()+=[]{}|;<>?~")
 
@@ -92,13 +95,24 @@ class HardcodedSecret(Rule):
             if label == "private key block" and not self._has_key_body(ctx.lines, number):
                 continue
             masked = text.replace(secret, _mask(secret)).strip()
+            test_data = self._named_like_test_data(text)
             yield ctx.make_finding(
                 self.meta,
                 number,
-                f"Hardcoded {label} ({_mask(secret)})",
+                f"Hardcoded {label} ({_mask(secret)})" + (" named like test data" if test_data else ""),
                 excerpt=masked,
-                confidence=0.95 if label != "credential assignment" else 0.7,
+                confidence=0.4 if test_data else (0.95 if label != "credential assignment" else 0.7),
+                severity=Severity.LOW if test_data else None,
             )
+
+    @staticmethod
+    def _named_like_test_data(text: str) -> bool:
+        """``FAKE_KEY = "sk-..."`` is almost certainly a test value, so it should not fail a build."""
+        match = re.match(r"\s*([\w.]+)\s*[:=]", text)
+        if not match:
+            return False
+        spaced = re.sub(r"([a-z])([A-Z])", r"\1 \2", match.group(1))
+        return bool(TEST_WORDS & set(re.findall(r"[a-z]+", spaced.lower())))
 
     @staticmethod
     def _has_key_body(lines: list[str], number: int) -> bool:

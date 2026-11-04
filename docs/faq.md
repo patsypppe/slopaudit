@@ -57,6 +57,16 @@ The import name differs from the PyPI name, or the package is private. Private: 
 [report it](https://github.com/patsypppe/slopguard/issues/new/choose) so it can be added to the alias table.
 As a workaround, suppress the line.
 
+**HAL-04 says a package is undeclared, but it is installed.**
+It is probably installed as a dependency of something you did declare. `pydantic_core`, for example, comes
+with `pydantic`. Importing it directly works today and breaks the day `pydantic` stops depending on it, so
+the fix is to declare it. slopguard reads `requirements*.txt` and `pyproject.toml` in the file's own folder
+and every folder above it, so a subproject or fixture folder can declare its own dependencies.
+
+**A key named `FAKE_KEY` or `TEST_API_KEY` is reported.**
+It is reported as **low** severity, so it does not fail a build, because a real key named like test data still
+deserves a look. Suppress it on the line if it is truly fake.
+
 **HAL-01 is slow or fails offline.**
 Lookups time out after a few seconds and an unknown answer is never reported as a finding, so an
 offline run is quiet, not wrong. Use `--no-network` for speed.

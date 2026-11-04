@@ -3,7 +3,22 @@
 All notable changes are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/),
 and versions follow [Semantic Versioning](https://semver.org/).
 
-## [1.0.0rc1] - unreleased
+## [1.0.0rc2] - unreleased
+
+Fixes from running slopguard on a real project (an agent with fixture packages and a Postgres store).
+
+### Fixed
+
+- HAL-01 and HAL-04 no longer report a package's own modules as unknown when they are imported by absolute
+  name from inside a fixture or test folder. Every folder or module in the project now counts as local.
+- HAL-04 reads `requirements*.txt` and `pyproject.toml` from the file's folder and every folder above it, so
+  subprojects and fixtures can declare their own dependencies.
+- HAL-03 no longer calls `psycopg` (psycopg 3) a typo of `psycopg2`; other legitimate neighbours of popular
+  names were added too.
+- SEC-01 reports credentials named like test data (`FAKE_KEY`, `TEST_API_KEY`) as low severity, so they no
+  longer fail builds. Normal names stay critical, and "latest" is not mistaken for "test".
+
+## [1.0.0rc1] - published to TestPyPI only
 
 First release candidate. Not yet published to PyPI.
 

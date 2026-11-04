@@ -73,7 +73,7 @@ measured, not hidden.
 
 | Area | How it works |
 | --- | --- |
-| Packages (HAL) | Import names are mapped to PyPI distribution names (with a table of aliases such as `yaml` to `pyyaml`), then looked up on PyPI. Answers are cached for 24 hours. Typosquats are names one edit away from a list of popular packages. Imports in `try/except ImportError`, inside functions, or under `TYPE_CHECKING` are reported with lower severity |
+| Packages (HAL) | Any folder or module inside the project counts as local, and dependencies are read from manifests in the file's folder and every folder above it. Import names are mapped to PyPI distribution names (with a table of aliases such as `yaml` to `pyyaml`), then looked up on PyPI. Answers are cached for 24 hours. Typosquats are names one edit away from a list of popular packages. Imports in `try/except ImportError`, inside functions, or under `TYPE_CHECKING` are reported with lower severity |
 | Incompleteness (INC) | AST checks for stubs and swallowed errors, token checks for comments and chat residue. Functions whose docstring explains the intent (hook, override, no-op) are skipped, and empty *methods* are low severity because they are usually hooks |
 | Secrets (SEC) | Provider-specific patterns, plus assignments to names like `token` or `password` whose values look like credentials (a digit or symbol, enough entropy, not an environment-variable name, URL or placeholder) |
 | Spec (SPC) | Each requirement is matched against names, strings and docstrings in the code; backticked names are looked up as definitions. With `--llm`, the best-matching functions go to a model for a reasoned verdict |
