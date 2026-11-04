@@ -54,6 +54,22 @@ def test_json_output_is_valid_and_versioned(project):
     assert data["summary"]["by_severity"]["critical"] == 1
 
 
+def test_github_output_is_a_workflow_annotation(project):
+    result = invoke("scan", str(project), "--no-network", "--format", "github")
+    assert result.exit_code == 1
+    line = result.stdout.strip().splitlines()[0]
+    assert line.startswith("::error file=bad.py,line=")
+    assert "LLM-02" in line
+    assert "Fix:" in line
+
+
+def test_github_output_is_empty_for_a_clean_project(tmp_path):
+    (tmp_path / "ok.py").write_text("x = 1\n")
+    result = invoke("scan", str(tmp_path), "--no-network", "--format", "github")
+    assert result.exit_code == 0
+    assert result.stdout.strip() == ""
+
+
 def test_sarif_output_structure(project, tmp_path):
     out = tmp_path / "out.sarif"
     result = invoke("scan", str(project), "--no-network", "-f", "sarif", "-o", str(out))
