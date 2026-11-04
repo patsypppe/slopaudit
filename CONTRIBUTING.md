@@ -18,7 +18,10 @@ By taking part you agree to follow the [code of conduct](CODE_OF_CONDUCT.md).
 
 ## Set up
 
-You need Python 3.10 or newer and git.
+**Fastest:** open the repository in [GitHub Codespaces](https://codespaces.new/patsypppe/slopguard) or in
+VS Code with the Dev Containers extension. The `.devcontainer` installs everything; then run `make check`.
+
+**On your machine:** you need Python 3.10 or newer and git.
 
 ```bash
 git clone https://github.com/patsypppe/slopguard
