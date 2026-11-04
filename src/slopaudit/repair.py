@@ -1,6 +1,6 @@
 """Verify-and-repair loop: scan, ask a model for a fix, re-scan, keep only real improvement.
 
-The model proposes a whole corrected file. slopguard accepts it only if the file still
+The model proposes a whole corrected file. slopaudit accepts it only if the file still
 parses, does not shrink suspiciously, has fewer serious findings than before, and introduces
 no new serious finding. Nothing touches disk unless the caller applies the result.
 """
@@ -12,10 +12,10 @@ import difflib
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from slopguard.context import ProjectContext
-from slopguard.engine import scan_text
-from slopguard.llm import LLMError, Provider, extract_code_block
-from slopguard.models import Finding, Rule, Severity
+from slopaudit.context import ProjectContext
+from slopaudit.engine import scan_text
+from slopaudit.llm import LLMError, Provider, extract_code_block
+from slopaudit.models import Finding, Rule, Severity
 
 SYSTEM = (
     "You repair security and completeness problems in one Python file. Return the complete "

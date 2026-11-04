@@ -11,9 +11,9 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from slopguard.drift import is_test_path
-from slopguard.models import Finding, Severity, finding_from_meta
-from slopguard.rules import get_rule
+from slopaudit.drift import is_test_path
+from slopaudit.models import Finding, Severity, finding_from_meta
+from slopaudit.rules import get_rule
 
 TEST_DEF = re.compile(r"^\s*(?:async\s+)?def\s+(test\w*)\s*\(")
 ASSERT_LINE = re.compile(r"^\s*assert\b|\bself\.assert\w+\(|\bpytest\.raises\(|\bassertRaises\(")

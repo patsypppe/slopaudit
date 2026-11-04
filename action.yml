@@ -1,6 +1,6 @@
-name: slopguard
+name: slopaudit
 description: Scan AI-generated code for LLM-app vulnerabilities, hallucinated imports and unfinished code.
-author: slopguard contributors
+author: slopaudit contributors
 branding:
   icon: shield
   color: gray-dark
@@ -19,10 +19,10 @@ inputs:
     description: Upload results to GitHub code scanning. The job needs `security-events - write`.
     default: "true"
   python-version:
-    description: Python version used to run slopguard.
+    description: Python version used to run slopaudit.
     default: "3.12"
   extra-args:
-    description: Extra arguments passed to `slopguard scan`.
+    description: Extra arguments passed to `slopaudit scan`.
     default: ""
 
 outputs:
@@ -40,7 +40,7 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
 
-    - name: Install slopguard
+    - name: Install slopaudit
       shell: bash
       run: python -m pip install --quiet "${{ github.action_path }}"
 
@@ -53,33 +53,33 @@ runs:
         SG_NO_NETWORK: ${{ inputs.no-network }}
         SG_EXTRA: ${{ inputs.extra-args }}
       run: |
-        sarif="${RUNNER_TEMP}/slopguard.sarif"
+        sarif="${RUNNER_TEMP}/slopaudit.sarif"
         flags=()
         if [ "${SG_NO_NETWORK}" = "true" ]; then flags+=(--no-network); fi
         set +e
         # shellcheck disable=SC2086
-        slopguard scan ${SG_PATH} --format sarif --output "${sarif}" --fail-on "${SG_FAIL_ON}" "${flags[@]}" ${SG_EXTRA}
+        slopaudit scan ${SG_PATH} --format sarif --output "${sarif}" --fail-on "${SG_FAIL_ON}" "${flags[@]}" ${SG_EXTRA}
         code=$?
         set -e
         echo "sarif=${sarif}" >> "$GITHUB_OUTPUT"
         echo "code=${code}" >> "$GITHUB_OUTPUT"
         if [ "${code}" -ge 2 ]; then
-          echo "::error::slopguard failed to run (exit ${code})"
+          echo "::error::slopaudit failed to run (exit ${code})"
           exit "${code}"
         fi
         # shellcheck disable=SC2086
-        slopguard scan ${SG_PATH} --format markdown --fail-on none "${flags[@]}" ${SG_EXTRA} >> "$GITHUB_STEP_SUMMARY"
+        slopaudit scan ${SG_PATH} --format markdown --fail-on none "${flags[@]}" ${SG_EXTRA} >> "$GITHUB_STEP_SUMMARY"
 
     - name: Upload SARIF
       if: ${{ inputs.upload-sarif == 'true' && steps.scan.outputs.sarif != '' }}
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: ${{ steps.scan.outputs.sarif }}
-        category: slopguard
+        category: slopaudit
 
     - name: Enforce threshold
       if: ${{ steps.scan.outputs.code == '1' }}
       shell: bash
       run: |
-        echo "::error::slopguard found issues at or above '${{ inputs.fail-on }}'"
+        echo "::error::slopaudit found issues at or above '${{ inputs.fail-on }}'"
         exit 1

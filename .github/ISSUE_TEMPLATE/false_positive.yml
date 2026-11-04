@@ -1,5 +1,5 @@
 name: False positive
-description: slopguard reported a problem that is not a problem
+description: slopaudit reported a problem that is not a problem
 labels: ["false-positive"]
 body:
   - type: markdown
@@ -32,13 +32,13 @@ body:
   - type: input
     id: version
     attributes:
-      label: slopguard version
-      description: Output of `slopguard --version`
+      label: slopaudit version
+      description: Output of `slopaudit --version`
     validations:
       required: true
   - type: textarea
     id: output
     attributes:
       label: Output
-      description: The finding as slopguard printed it.
+      description: The finding as slopaudit printed it.
       render: text

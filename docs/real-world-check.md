@@ -1,6 +1,6 @@
 # Real-world check: mature packages as a false-positive control
 
-Generated 2026-11-04 by `benchmarks/realworld.py` with slopguard 1.0.0rc1 (with PyPI lookups). Do not edit by hand.
+Generated 2026-11-04 by `benchmarks/realworld.py` with slopaudit 1.0.0rc1 (with PyPI lookups). Do not edit by hand.
 
 These are well-reviewed, human-written packages, so a serious finding here is almost certainly a false positive. The code was parsed, never imported or run. They are not AI-generated, so this measures noise, not detection.
 

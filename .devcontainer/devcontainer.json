@@ -1,7 +1,7 @@
 {
-  "name": "slopguard",
+  "name": "slopaudit",
   "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bookworm",
-  "postCreateCommand": "python -m pip install --upgrade pip && python -m pip install -e '.[dev]' && slopguard --version",
+  "postCreateCommand": "python -m pip install --upgrade pip && python -m pip install -e '.[dev]' && slopaudit --version",
   "customizations": {
     "vscode": {
       "extensions": [

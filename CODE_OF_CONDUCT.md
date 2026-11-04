@@ -1,6 +1,6 @@
 # Code of conduct
 
-slopguard is a small project that depends on people being able to disagree about code without it
+slopaudit is a small project that depends on people being able to disagree about code without it
 becoming personal. This is how we expect everyone to behave in issues, pull requests, discussions and
 any other space connected to the project.
 

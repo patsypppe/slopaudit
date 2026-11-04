@@ -36,7 +36,7 @@ def main(folder: str) -> int:
         broken = RELATIVE_LINK.findall(description)
         if broken:
             problems.append(f"{len(broken)} relative link(s) in the PyPI description, e.g. {broken[0]}")
-        for required in ("slopguard/py.typed", "slopguard/cli.py", "slopguard/rules/llm_flow.py"):
+        for required in ("slopaudit/py.typed", "slopaudit/cli.py", "slopaudit/rules/llm_flow.py"):
             if required not in names:
                 problems.append(f"wheel is missing {required}")
         with tarfile.open(sdists[0]) as sdist:

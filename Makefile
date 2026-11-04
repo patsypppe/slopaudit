@@ -14,16 +14,16 @@ test:           ## run the test suite
 lint:           ## ruff on code, tests and benchmark scripts
 	ruff check src tests benchmarks/compare.py benchmarks/realworld.py
 
-scan:           ## slopguard scans itself
-	slopguard scan . --no-network
+scan:           ## slopaudit scans itself
+	slopaudit scan . --no-network
 
 bench:          ## benchmark gate on the labelled corpus
-	slopguard bench --min-precision 0.85
+	slopaudit bench --min-precision 0.85
 
 check: lint test scan bench   ## everything CI runs
 
 docs:           ## regenerate docs/rules.md and docs/cli.md
-	$(PY) -m slopguard.docgen
+	$(PY) -m slopaudit.docgen
 
 build:          ## build the wheel and sdist and check them
 	$(PY) -m pip install build twine

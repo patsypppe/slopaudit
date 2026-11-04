@@ -12,10 +12,10 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from slopguard.config import Config
-from slopguard.context import build_project
-from slopguard.engine import discover, run_scan
-from slopguard.rules import all_rules
+from slopaudit.config import Config
+from slopaudit.context import build_project
+from slopaudit.engine import discover, run_scan
+from slopaudit.rules import all_rules
 
 LABEL = re.compile(r"^#\s*expect:\s*(.+)$", re.MULTILINE)
 

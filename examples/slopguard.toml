@@ -1,4 +1,4 @@
-# Copy next to your code and adjust. `slopguard init` writes a fuller, commented version.
+# Copy next to your code and adjust. `slopaudit init` writes a fuller, commented version.
 
 [scan]
 exclude = ["tests/fixtures/**"]

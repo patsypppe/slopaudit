@@ -21,18 +21,18 @@ def normalize(name: str) -> str:
 
 
 def default_cache_path() -> Path:
-    base = os.environ.get("SLOPGUARD_CACHE_DIR")
+    base = os.environ.get("SLOPAUDIT_CACHE_DIR")
     if base:
         return Path(base) / "registry.json"
     xdg = os.environ.get("XDG_CACHE_HOME")
     root = Path(xdg) if xdg else Path.home() / ".cache"
-    return root / "slopguard" / "registry.json"
+    return root / "slopaudit" / "registry.json"
 
 
 def fetch_pypi_status(name: str) -> int | None:
     """Return the HTTP status for the project page, or None when unreachable."""
     url = f"https://pypi.org/pypi/{normalize(name)}/json"
-    request = urllib.request.Request(url, headers={"User-Agent": "slopguard"})
+    request = urllib.request.Request(url, headers={"User-Agent": "slopaudit"})
     try:
         with urllib.request.urlopen(request, timeout=5) as response:
             return response.status
@@ -45,7 +45,7 @@ def fetch_pypi_status(name: str) -> int | None:
 def fetch_pypi_json(name: str) -> dict | None:
     """Return the PyPI JSON document for a project, or None when unavailable."""
     url = f"https://pypi.org/pypi/{normalize(name)}/json"
-    request = urllib.request.Request(url, headers={"User-Agent": "slopguard"})
+    request = urllib.request.Request(url, headers={"User-Agent": "slopaudit"})
     try:
         with urllib.request.urlopen(request, timeout=8) as response:
             return json.loads(response.read())
@@ -125,7 +125,7 @@ class RegistryClient:
         try:
             self.cache_path.parent.mkdir(parents=True, exist_ok=True)
             self.cache_path.write_text(json.dumps(self._cache, indent=1))
-        except OSError:  # slopguard: ignore[INC-04] the cache is best-effort
+        except OSError:  # slopaudit: ignore[INC-04] the cache is best-effort
             pass
 
     def _load(self) -> dict[str, dict]:

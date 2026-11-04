@@ -122,7 +122,7 @@ def test_unknown_imports_in_optional_places_are_medium_not_high(scan):
         assert found[name].severity.label == "medium" and found[name].confidence <= 0.5
 
 
-# -- found by running slopguard on a real project (an agent with fixtures and a Postgres store) --
+# -- found by running slopaudit on a real project (an agent with fixtures and a Postgres store) --
 
 
 def test_a_fixture_importing_its_own_package_is_local(scan):

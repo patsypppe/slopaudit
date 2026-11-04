@@ -36,11 +36,11 @@ def test_alias_maps_import_name_to_distribution(scan):
 
 
 def test_unknown_registry_answer_is_not_flagged(scan, tmp_path):
-    from slopguard.config import Config
-    from slopguard.context import build_project
-    from slopguard.engine import discover, run_scan
-    from slopguard.registry import RegistryClient
-    from slopguard.rules import all_rules
+    from slopaudit.config import Config
+    from slopaudit.context import build_project
+    from slopaudit.engine import discover, run_scan
+    from slopaudit.registry import RegistryClient
+    from slopaudit.rules import all_rules
 
     (tmp_path / "a.py").write_text("import totally_made_up_pkg\n")
     registry = RegistryClient(cache_path=tmp_path / "c.json", fetcher=lambda n: None)
@@ -51,7 +51,7 @@ def test_unknown_registry_answer_is_not_flagged(scan, tmp_path):
 
 
 def test_registry_results_are_cached(tmp_path):
-    from slopguard.registry import RegistryClient
+    from slopaudit.registry import RegistryClient
 
     calls = []
 
@@ -110,11 +110,11 @@ def test_typosquat_ignores_aliases_stdlib_and_local(scan):
 def _newborn_scan(tmp_path, days_old, rule_options=None):
     from datetime import datetime, timedelta, timezone
 
-    from slopguard.config import Config
-    from slopguard.context import build_project
-    from slopguard.engine import discover, run_scan
-    from slopguard.registry import RegistryClient
-    from slopguard.rules import all_rules
+    from slopaudit.config import Config
+    from slopaudit.context import build_project
+    from slopaudit.engine import discover, run_scan
+    from slopaudit.registry import RegistryClient
+    from slopaudit.rules import all_rules
 
     born = (datetime.now(timezone.utc) - timedelta(days=days_old)).isoformat()
     document = {"releases": {"0.1": [{"upload_time_iso_8601": born}]}}
@@ -145,7 +145,7 @@ def test_newborn_threshold_is_configurable(tmp_path):
 
 
 def test_first_release_is_cached(tmp_path):
-    from slopguard.registry import RegistryClient
+    from slopaudit.registry import RegistryClient
 
     calls = []
     document = {"releases": {"1.0": [{"upload_time_iso_8601": "2024-01-02T03:04:05.000000Z"}]}}
@@ -162,7 +162,7 @@ def test_first_release_is_cached(tmp_path):
 
 
 def test_private_packages_are_skipped_by_every_hal_rule(scan):
-    from slopguard.config import Config
+    from slopaudit.config import Config
 
     source = "import acme_internal\nimport reqeusts\n"
     cfg = Config(private_packages=["acme_internal"])
@@ -175,7 +175,7 @@ def test_private_packages_are_skipped_by_every_hal_rule(scan):
 def test_private_packages_config_is_validated():
     import pytest
 
-    from slopguard.config import Config, ConfigError
+    from slopaudit.config import Config, ConfigError
 
     assert Config.from_mapping({"packages": {"private": ["a", "b"]}}).private_packages == ["a", "b"]
     with pytest.raises(ConfigError):

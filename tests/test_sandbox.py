@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from slopguard import sandbox
-from slopguard.sandbox import SandboxError, pick_backend, run_tests
+from slopaudit import sandbox
+from slopaudit.sandbox import SandboxError, pick_backend, run_tests
 
 PASSING = "def test_ok():\n    assert 1 + 1 == 2\n"
 FAILING = "def test_bad():\n    assert 1 + 1 == 3\n"

@@ -2,7 +2,7 @@
 """False-positive check on mature, human-written packages.
 
 Downloads wheels from PyPI into a temporary folder, unpacks them, and scans the Python source
-with slopguard's default rules. The code is only parsed, never imported or run. These packages
+with slopaudit's default rules. The code is only parsed, never imported or run. These packages
 are well reviewed, so serious findings on them are mostly false positives; every one should be
 read by a person, which is the point of this script.
 
@@ -22,11 +22,11 @@ from collections import Counter
 from datetime import date
 from pathlib import Path
 
-from slopguard import __version__
-from slopguard.config import Config
-from slopguard.context import build_project
-from slopguard.engine import discover, run_scan
-from slopguard.rules import all_rules
+from slopaudit import __version__
+from slopaudit.config import Config
+from slopaudit.context import build_project
+from slopaudit.engine import discover, run_scan
+from slopaudit.rules import all_rules
 
 DEFAULT_PACKAGES = [
     "requests", "flask", "click", "jinja2", "httpx", "rich", "werkzeug", "typer",
@@ -63,7 +63,7 @@ def main() -> int:
     rows, by_rule, total_lines, serious = [], Counter(), 0, 0
     rules = [r for r in all_rules() if r.meta.module != "drf"]
     started = time.time()
-    with tempfile.TemporaryDirectory(prefix="slopguard-real-") as tmp:
+    with tempfile.TemporaryDirectory(prefix="slopaudit-real-") as tmp:
         for package in args.packages:
             work = Path(tmp) / package
             work.mkdir()
@@ -92,7 +92,7 @@ def main() -> int:
     out = [
         "# Real-world check: mature packages as a false-positive control",
         "",
-        f"Generated {date.today().isoformat()} by `benchmarks/realworld.py` with slopguard "
+        f"Generated {date.today().isoformat()} by `benchmarks/realworld.py` with slopaudit "
         f"{__version__} ({'offline' if args.no_network else 'with PyPI lookups'}). Do not edit by hand.",
         "",
         "These are well-reviewed, human-written packages, so a serious finding here is almost "

@@ -1,6 +1,6 @@
 # Beyond scanning
 
-Scanning is the core of slopguard and needs nothing but the code. These commands go further: they check code against what you asked for, compare it with the rest of the repo and its tests, and can propose repairs. Anything that uses a model is opt-in and says what it will send first.
+Scanning is the core of slopaudit and needs nothing but the code. These commands go further: they check code against what you asked for, compare it with the rest of the repo and its tests, and can propose repairs. Anything that uses a model is opt-in and says what it will send first.
 
 > **Experimental in 1.0.** `scan --spec --llm`, `gen-tests` and `fix` are tested against local servers
 > that mimic the Anthropic, OpenAI and Ollama APIs, not against the live services, and the Docker sandbox
@@ -18,8 +18,8 @@ Scanning is the core of slopguard and needs nothing but the code. These commands
 ## Checking code against a spec
 
 ```bash
-slopguard scan src --spec SPEC.md            # offline: name matching only
-slopguard scan src --spec SPEC.md --llm      # a model judges the best-matching code
+slopaudit scan src --spec SPEC.md            # offline: name matching only
+slopaudit scan src --spec SPEC.md --llm      # a model judges the best-matching code
 ```
 
 Each bullet (or sentence with "must", "should", "shall") in the spec becomes a requirement.
@@ -27,16 +27,16 @@ Backticked names such as `` `parse_invoice()` `` or `` `--json` `` are looked up
 means missing, defined-but-empty means partial. Other requirements are matched by their key
 words against identifiers, strings and docstrings. **Without `--llm` this can show that code
 exists, not that it behaves correctly**, and the output says so. With `--llm`, only the matching
-functions and the requirement text are sent to your provider, and slopguard tells you before it does.
+functions and the requirement text are sent to your provider, and slopaudit tells you before it does.
 Requirements under "Non-goals" or "Out of scope" headings are skipped.
 
 ## Generated tests
 
 ```bash
-slopguard gen-tests --spec SPEC.md src --run
+slopaudit gen-tests --spec SPEC.md src --run
 ```
 
-The model writes pytest tests named `test_r<N>_...` (one group per requirement); slopguard rejects
+The model writes pytest tests named `test_r<N>_...` (one group per requirement); slopaudit rejects
 files that do not parse, have no tests, or import `subprocess`, `socket` or network libraries, writes
 the file for you to review, and with `--run` executes it in a sandbox and reports per requirement.
 A failing generated test lowers the verdict to partial: the test may be wrong, not only the code.
@@ -49,7 +49,7 @@ temp copy, a stripped environment and resource limits, and is for when you accep
 ## Style drift
 
 ```bash
-slopguard scan --staged -m drf               # compare changed files with the rest of the repo
+slopaudit scan --staged -m drf               # compare changed files with the rest of the repo
 ```
 
 Off by default. It mines naming, library choices and idioms from the files outside the change and
@@ -58,8 +58,8 @@ flags deviations. It says nothing for repos with fewer than three other Python f
 ## Regression guard
 
 ```bash
-slopguard regress --base main                # deleted, skipped or weakened tests
-slopguard regress --base main --run-tests    # also run the suite at the base and now
+slopaudit regress --base main                # deleted, skipped or weakened tests
+slopaudit regress --base main --run-tests    # also run the suite at the base and now
 ```
 
 Run it in CI on pull requests. `--run-tests` checks out the base into a temporary worktree and puts
@@ -68,8 +68,8 @@ it first on `PYTHONPATH`; a package installed in editable mode may still import 
 ## Repair loop
 
 ```bash
-slopguard fix src                            # dry run: shows a diff
-slopguard fix src --apply                    # asks before writing; --yes skips the prompt
+slopaudit fix src                            # dry run: shows a diff
+slopaudit fix src --apply                    # asks before writing; --yes skips the prompt
 ```
 
 Scans, sends each file with serious findings to your model, re-scans the proposal, and keeps it only

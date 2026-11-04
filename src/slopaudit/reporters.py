@@ -9,8 +9,8 @@ from itertools import groupby
 from rich.console import Console
 from rich.text import Text
 
-from slopguard import __version__
-from slopguard.models import Finding, Rule, Severity
+from slopaudit import __version__
+from slopaudit.models import Finding, Rule, Severity
 
 SARIF_SCHEMA = "https://json.schemastore.org/sarif-2.1.0.json"
 SEVERITY_STYLE = {
@@ -57,7 +57,7 @@ def render_terminal(
         console.print(Text(f"warning: {error}", style="yellow"))
     if files_scanned == 0:
         console.print(
-            Text("warning: no supported files found (slopguard reads Python, .env and common "
+            Text("warning: no supported files found (slopaudit reads Python, .env and common "
                  "config files), so this is not a clean result", style="yellow")
         )
     counts = summarize(findings)
@@ -69,7 +69,7 @@ def render_terminal(
 def to_json(findings: list[Finding], files_scanned: int, errors: list[str]) -> str:
     payload = {
         "version": 1,
-        "tool": {"name": "slopguard", "version": __version__},
+        "tool": {"name": "slopaudit", "version": __version__},
         "summary": {"files_scanned": files_scanned, "by_severity": summarize(findings)},
         "findings": [f.to_dict() for f in findings],
         "errors": errors,
@@ -79,7 +79,7 @@ def to_json(findings: list[Finding], files_scanned: int, errors: list[str]) -> s
 
 def to_markdown(findings: list[Finding], files_scanned: int) -> str:
     counts = summarize(findings)
-    lines = ["# slopguard report", "", f"{files_scanned} files scanned."]
+    lines = ["# slopaudit report", "", f"{files_scanned} files scanned."]
     lines.append("")
     lines.append("| " + " | ".join(counts) + " |")
     lines.append("|" + "---|" * len(counts))
@@ -129,7 +129,7 @@ def to_sarif(findings: list[Finding], rules: list[Rule]) -> dict:
                     }
                 }
             ],
-            "partialFingerprints": {"slopguard/v1": f.fingerprint()},
+            "partialFingerprints": {"slopaudit/v1": f.fingerprint()},
             "properties": {"confidence": round(f.confidence, 2), "trace": list(f.trace)},
         }
         if f.rule_id in index:
@@ -142,7 +142,7 @@ def to_sarif(findings: list[Finding], rules: list[Rule]) -> dict:
             {
                 "tool": {
                     "driver": {
-                        "name": "slopguard",
+                        "name": "slopaudit",
                         "version": __version__,
                         "rules": driver_rules,
                     }

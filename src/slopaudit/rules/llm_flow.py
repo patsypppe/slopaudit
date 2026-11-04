@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from slopguard.context import FileContext
-from slopguard.models import Finding, Rule, RuleMeta, Severity
-from slopguard.rules import register
-from slopguard.taint import Flow, find_flows
+from slopaudit.context import FileContext
+from slopaudit.models import Finding, Rule, RuleMeta, Severity
+from slopaudit.rules import register
+from slopaudit.taint import Flow, find_flows
 
 OWASP_OUTPUT_HANDLING = "LLM05:2025 Improper Output Handling"
 OWASP_PROMPT_INJECTION = "LLM01:2025 Prompt Injection"

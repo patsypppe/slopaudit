@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from slopguard.models import Rule
+from slopaudit.models import Rule
 
 _REGISTRY: dict[str, Rule] = {}
 
@@ -24,7 +24,7 @@ def get_rule(rule_id: str) -> Rule | None:
     return _REGISTRY.get(rule_id.upper())
 
 
-from slopguard.rules import (  # noqa: E402,F401
+from slopaudit.rules import (  # noqa: E402,F401
     drift,
     hallucination,
     incomplete,

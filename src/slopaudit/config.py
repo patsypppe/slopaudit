@@ -1,4 +1,4 @@
-"""Configuration loading from ``slopguard.toml`` or ``[tool.slopguard]``."""
+"""Configuration loading from ``slopaudit.toml`` or ``[tool.slopaudit]``."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ if sys.version_info >= (3, 11):
 else:  # pragma: no cover
     import tomli as tomllib
 
-from slopguard.models import Severity
+from slopaudit.models import Severity
 
 MODULES = ("hal", "inc", "sec", "llm", "drf", "spc", "reg")
 DEFAULT_OFF = frozenset({"drf"})  # opt-in: needs a representative baseline of the repo
@@ -149,13 +149,13 @@ class Config:
             if not explicit.is_file():
                 raise ConfigError(f"config file not found: {explicit}")
             return cls._from_file(explicit)
-        candidate = root / "slopguard.toml"
+        candidate = root / "slopaudit.toml"
         if candidate.is_file():
             return cls._from_file(candidate)
         pyproject = root / "pyproject.toml"
         if pyproject.is_file():
             data = _read_toml(pyproject)
-            section = data.get("tool", {}).get("slopguard")
+            section = data.get("tool", {}).get("slopaudit")
             if isinstance(section, dict):
                 return cls.from_mapping(section, pyproject)
         return cls()
@@ -164,7 +164,7 @@ class Config:
     def _from_file(cls, path: Path) -> Config:
         data = _read_toml(path)
         if path.name == "pyproject.toml":
-            data = data.get("tool", {}).get("slopguard", {})
+            data = data.get("tool", {}).get("slopaudit", {})
         return cls.from_mapping(data, path)
 
 
@@ -193,7 +193,7 @@ def _str_list(table: dict[str, Any], key: str) -> list[str]:
 
 
 STARTER_CONFIG = """\
-# slopguard configuration. See docs/PRD for every option.
+# slopaudit configuration. See docs/PRD for every option.
 
 [scan]
 exclude = ["tests/fixtures/**"]

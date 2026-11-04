@@ -12,7 +12,7 @@ body:
     id: command
     attributes:
       label: Command and configuration
-      description: The exact command, and your `slopguard.toml` if you have one.
+      description: The exact command, and your `slopaudit.toml` if you have one.
       render: shell
     validations:
       required: true
@@ -24,8 +24,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: slopguard version
-      description: Output of `slopguard --version`
+      label: slopaudit version
+      description: Output of `slopaudit --version`
     validations:
       required: true
   - type: input

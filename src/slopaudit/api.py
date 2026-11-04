@@ -1,11 +1,11 @@
 """The supported Python API.
 
-Everything importable from ``slopguard`` directly (``slopguard.scan``, ``Finding``,
+Everything importable from ``slopaudit`` directly (``slopaudit.scan``, ``Finding``,
 ``Severity``, ``Config``) comes from here. The CLI is a thin layer over the same functions.
 
-    import slopguard
+    import slopaudit
 
-    result = slopguard.scan(["src"], network=False)
+    result = slopaudit.scan(["src"], network=False)
     for finding in result.findings:
         print(finding.rule_id, finding.path, finding.line, finding.message)
 """
@@ -15,11 +15,11 @@ from __future__ import annotations
 from collections.abc import Iterable
 from pathlib import Path
 
-from slopguard.config import MODULES, Config
-from slopguard.context import build_project
-from slopguard.engine import ScanResult, discover, find_root, run_scan, scan_text
-from slopguard.models import Finding, Rule, Severity
-from slopguard.rules import all_rules
+from slopaudit.config import MODULES, Config
+from slopaudit.context import build_project
+from slopaudit.engine import ScanResult, discover, find_root, run_scan, scan_text
+from slopaudit.models import Finding, Rule, Severity
+from slopaudit.rules import all_rules
 
 __all__ = ["Config", "Finding", "ScanResult", "Severity", "scan", "scan_source", "select_rules"]
 
@@ -64,9 +64,9 @@ def scan(
 ) -> ScanResult:
     """Scan files or folders and return the findings.
 
-    ``config`` wins over ``config_path``; with neither, ``slopguard.toml`` or
-    ``[tool.slopguard]`` is read from the project root. ``network=False`` skips PyPI lookups.
-    Raises ``slopguard.config.ConfigError`` for a bad configuration and ``FileNotFoundError``
+    ``config`` wins over ``config_path``; with neither, ``slopaudit.toml`` or
+    ``[tool.slopaudit]`` is read from the project root. ``network=False`` skips PyPI lookups.
+    Raises ``slopaudit.config.ConfigError`` for a bad configuration and ``FileNotFoundError``
     for a path that does not exist.
     """
     targets = [Path(p) for p in paths]

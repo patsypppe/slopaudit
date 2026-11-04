@@ -10,7 +10,7 @@ using **PyPI trusted publishing** (OpenID Connect). No API token is ever stored 
 
 ## One-time setup (only the project owner can do this)
 
-The name `slopguard` was free on both PyPI and TestPyPI when this was written. Names are first come,
+The name `slopaudit` was free on both PyPI and TestPyPI when this was written. Names are first come,
 first served and a pending publisher does **not** reserve one, so do step 1 and your first upload soon.
 
 **1. Register the publisher on PyPI**, with no account token needed:
@@ -20,9 +20,9 @@ first served and a pending publisher does **not** reserve one, so do step 1 and 
 
    | Field | Value |
    | --- | --- |
-   | PyPI project name | `slopguard` |
+   | PyPI project name | `slopaudit` |
    | Owner | `patsypppe` |
-   | Repository name | `slopguard` |
+   | Repository name | `slopaudit` |
    | Workflow name | `release.yml` |
    | Environment name | `pypi` |
 
@@ -37,9 +37,9 @@ your approval, and restrict deployment branches and tags to `v*`.
 
 ```bash
 python3 -m venv /tmp/try && . /tmp/try/bin/activate
-pip install --pre --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ slopguard
-slopguard --version
-slopguard scan --help
+pip install --pre --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ slopaudit
+slopaudit --version
+slopaudit scan --help
 ```
 
 If that works, you know the packaging, the publisher setup and the workflow are all correct.
@@ -57,7 +57,7 @@ version does not fail with "File already exists".
 
 ## Each release
 
-1. Update `__version__` in `src/slopguard/__init__.py` and move the changelog entry from
+1. Update `__version__` in `src/slopaudit/__init__.py` and move the changelog entry from
    "unreleased" to the version and date.
 2. Run the checks in [CONTRIBUTING.md](../CONTRIBUTING.md) (`make check`).
 3. Regenerate the generated docs if rules or commands changed: `make docs`.
@@ -68,7 +68,7 @@ version does not fail with "File already exists".
    ```
 
 5. Approve the `pypi` environment when GitHub asks. After publishing, the README badges for PyPI
-   start working and `pipx install --pre slopguard` works.
+   start working and `pipx install --pre slopaudit` works.
 
 ## Before dropping the `rc` suffix
 

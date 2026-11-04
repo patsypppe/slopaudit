@@ -1,6 +1,6 @@
 """LLM provider interface and small HTTP clients.
 
-slopguard never needs a model for its scanning rules. Providers are used only by features
+slopaudit never needs a model for its scanning rules. Providers are used only by features
 that opt in: judging requirements, generating tests and proposing repairs. No SDK is
 required; the clients speak plain HTTPS with ``urllib``. There is deliberately no default
 model name: model IDs change, so the user sets the one they want.
@@ -17,7 +17,7 @@ import urllib.request
 from collections.abc import Mapping
 from typing import Any, Protocol
 
-from slopguard.config import Config
+from slopaudit.config import Config
 
 
 class LLMError(Exception):
@@ -150,12 +150,12 @@ def get_provider(config: Config, env: Mapping[str, str] | None = None) -> Provid
     name = config.llm_provider
     if name == "none":
         raise LLMError(
-            "no LLM provider configured. Add an [llm] section to slopguard.toml "
+            "no LLM provider configured. Add an [llm] section to slopaudit.toml "
             '(provider = "anthropic", "openai" or "ollama", and model = "<model id>")'
         )
-    model = config.llm_model or env.get("SLOPGUARD_LLM_MODEL", "")
+    model = config.llm_model or env.get("SLOPAUDIT_LLM_MODEL", "")
     if not model:
-        raise LLMError("no model set: add `model = ...` under [llm] or set SLOPGUARD_LLM_MODEL")
+        raise LLMError("no model set: add `model = ...` under [llm] or set SLOPAUDIT_LLM_MODEL")
     if name == "ollama":
         return OllamaProvider(model, config.llm_base_url)
     key_var = "ANTHROPIC_API_KEY" if name == "anthropic" else "OPENAI_API_KEY"

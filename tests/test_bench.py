@@ -2,8 +2,8 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from slopguard.bench import RuleScore, parse_expected, run_benchmark
-from slopguard.cli import app
+from slopaudit.bench import RuleScore, parse_expected, run_benchmark
+from slopaudit.cli import app
 
 CORPUS = Path(__file__).resolve().parent.parent / "benchmarks" / "corpus"
 

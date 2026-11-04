@@ -1,7 +1,7 @@
 import pytest
 
-from slopguard.config import Config
-from slopguard.llm import (
+from slopaudit.config import Config
+from slopaudit.llm import (
     AnthropicProvider,
     LLMError,
     OllamaProvider,
@@ -66,7 +66,7 @@ def test_get_provider_builds_each_kind():
     cfg = Config(llm_provider="openai", llm_model="m")
     assert get_provider(cfg, {"OPENAI_API_KEY": "k"}).name == "openai"
     assert get_provider(Config(llm_provider="ollama", llm_model="m"), {}).name == "ollama"
-    env = {"ANTHROPIC_API_KEY": "k", "SLOPGUARD_LLM_MODEL": "from-env"}
+    env = {"ANTHROPIC_API_KEY": "k", "SLOPAUDIT_LLM_MODEL": "from-env"}
     provider = get_provider(Config(llm_provider="anthropic"), env)
     assert provider.model == "from-env"
 

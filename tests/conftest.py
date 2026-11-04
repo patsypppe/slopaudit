@@ -5,11 +5,11 @@ from pathlib import Path
 
 import pytest
 
-from slopguard.config import Config
-from slopguard.context import build_project
-from slopguard.engine import discover, run_scan
-from slopguard.registry import RegistryClient
-from slopguard.rules import all_rules
+from slopaudit.config import Config
+from slopaudit.context import build_project
+from slopaudit.engine import discover, run_scan
+from slopaudit.registry import RegistryClient
+from slopaudit.rules import all_rules
 
 
 @pytest.fixture

@@ -3,8 +3,8 @@ import json
 from conftest import ScriptedProvider
 from typer.testing import CliRunner
 
-from slopguard.cli import app
-from slopguard.spec import parse_spec, verdict_findings, verify_spec
+from slopaudit.cli import app
+from slopaudit.spec import parse_spec, verdict_findings, verify_spec
 
 SPEC = """# Invoice tool
 
@@ -128,7 +128,7 @@ def test_cli_spec_errors(tmp_path):
 
 def test_cli_spec_with_llm_over_http(tmp_path, fake_llm, monkeypatch):
     monkeypatch.setenv("ANTHROPIC_API_KEY", "k")
-    (tmp_path / "slopguard.toml").write_text(
+    (tmp_path / "slopaudit.toml").write_text(
         f'[llm]\nprovider = "anthropic"\nmodel = "m"\nbase_url = "{fake_llm["url"]}"\n')
     (tmp_path / "inv.py").write_text(CODE)
     (tmp_path / "SPEC.md").write_text("- `parse_invoice()` reads an invoice file and returns the total\n")

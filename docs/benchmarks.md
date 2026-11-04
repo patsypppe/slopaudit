@@ -1,20 +1,20 @@
-# Benchmark: slopguard against other scanners
+# Benchmark: slopaudit against other scanners
 
 Generated 2026-10-27 by `benchmarks/compare.py`. Do not edit by hand.
 
 ## What this measures, and what it does not
 
-- **Corpus:** 21 files with known problems and 13 safe files in `benchmarks/corpus/`. The maintainers wrote it, and it is built around the problems slopguard targets. It is a *coverage* check on LLM-era problems, **not** a general quality ranking: Bandit and Semgrep are broader tools that were not built for these cases.
+- **Corpus:** 21 files with known problems and 13 safe files in `benchmarks/corpus/`. The maintainers wrote it, and it is built around the problems slopaudit targets. It is a *coverage* check on LLM-era problems, **not** a general quality ranking: Bandit and Semgrep are broader tools that were not built for these cases.
 - **Method:** each tool runs as an external program and only its JSON report is read. A tool *flags* a file if it reports at least one finding at or above the severity shown (its own scale mapped to low / medium / high). Per-rule scoring is not possible because the rule sets differ.
 - **Semgrep** ran with the public community rules of `semgrep-rules` at `16b9e6d`, not its commercial packs. The `ai/` folder holds SDK best-practice lints (missing user id, missing system prompt, no error handling), so it is reported as its own row instead of being mixed with the security rules. The rules are used locally for this comparison only and are not redistributed.
-- **vibechck** is AGPL-3.0. It is run as a black box and none of its code is used by slopguard.
-- slopguard's own rules were tuned against this corpus, so its numbers here are optimistic. The two files labelled `gap_*` are known misses and count against it.
+- **vibechck** is AGPL-3.0. It is run as a black box and none of its code is used by slopaudit.
+- slopaudit's own rules were tuned against this corpus, so its numbers here are optimistic. The two files labelled `gap_*` are known misses and count against it.
 
 ## Files flagged: Any severity
 
 | Tool | LLM-app security | Hardcoded secrets | Incomplete code | Hallucinated packages | False alarms on safe files |
 | --- | --- | --- | --- | --- | --- |
-| slopguard | 13/15 | 1/1 | 4/4 | 1/1 | 0/13 |
+| slopaudit | 13/15 | 1/1 | 4/4 | 1/1 | 0/13 |
 | Bandit | 6/15 | 1/1 | 1/4 | 0/1 | 2/13 |
 | Semgrep (python rules) | 8/15 | 0/1 | 2/4 | 0/1 | 2/13 |
 | Semgrep (ai rules) | 13/15 | 0/1 | 0/4 | 0/1 | 8/13 |
@@ -24,7 +24,7 @@ Generated 2026-10-27 by `benchmarks/compare.py`. Do not edit by hand.
 
 | Tool | LLM-app security | Hardcoded secrets | Incomplete code | Hallucinated packages | False alarms on safe files |
 | --- | --- | --- | --- | --- | --- |
-| slopguard | 12/15 | 1/1 | 3/4 | 1/1 | 0/13 |
+| slopaudit | 12/15 | 1/1 | 3/4 | 1/1 | 0/13 |
 | Bandit | 6/15 | 0/1 | 0/4 | 0/1 | 1/13 |
 | Semgrep (python rules) | 8/15 | 0/1 | 2/4 | 0/1 | 2/13 |
 | Semgrep (ai rules) | 12/15 | 0/1 | 0/4 | 0/1 | 6/13 |
@@ -34,7 +34,7 @@ Generated 2026-10-27 by `benchmarks/compare.py`. Do not edit by hand.
 
 | Tool | Version | Time on corpus | Note |
 | --- | --- | --- | --- |
-| slopguard | 0.1.0 | 0.1s |  |
+| slopaudit | 0.1.0 | 0.1s |  |
 | Bandit | 1.9.4 | 0.2s | 1 file(s) it could not parse |
 | Semgrep (python rules) | 1.182.1 | 17.4s | public semgrep-rules @ 16b9e6d |
 | Semgrep (ai rules) | 1.182.1 | 5.2s | public semgrep-rules @ 16b9e6d |
@@ -46,7 +46,7 @@ A tool can flag a file for an unrelated reason, so read the rule IDs, not only t
 
 <details><summary>Show every file</summary>
 
-| File | Expected | slopguard | Bandit | Semgrep (python rules) | Semgrep (ai rules) | vibechck |
+| File | Expected | slopaudit | Bandit | Semgrep (python rules) | Semgrep (ai rules) | vibechck |
 | --- | --- | --- | --- | --- | --- | --- |
 | `vulnerable/gap_cross_function.py` | LLM-02 | - | `B307` | `eval-detected` | `anthropic-missing-metadata-user-id-python`, `anthropic-missing-system-prompt-python`, `anthropic-no-error-handling` +1 | - |
 | `vulnerable/gap_instance_attribute.py` | LLM-02 | - | `B102` | `exec-detected` | `anthropic-missing-metadata-user-id-python`, `anthropic-missing-system-prompt-python`, `anthropic-no-error-handling` +1 | - |

@@ -27,9 +27,9 @@ jobs:
       - name: Test
         run: pytest -q
       - name: Scan this repository with itself
-        run: slopguard scan . --no-network
+        run: slopaudit scan . --no-network
       - name: Benchmark gate
-        run: slopguard bench --min-precision 0.85
+        run: slopaudit bench --min-precision 0.85
 
   package:
     runs-on: ubuntu-latest
@@ -48,6 +48,6 @@ jobs:
         run: |
           python -m venv /tmp/clean
           /tmp/clean/bin/pip install dist/*.whl
-          /tmp/clean/bin/slopguard --version
-          /tmp/clean/bin/slopguard rules > /dev/null
-          /tmp/clean/bin/slopguard scan examples/vulnerable_agent --no-network --fail-on none
+          /tmp/clean/bin/slopaudit --version
+          /tmp/clean/bin/slopaudit rules > /dev/null
+          /tmp/clean/bin/slopaudit scan examples/vulnerable_agent --no-network --fail-on none

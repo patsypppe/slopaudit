@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare slopguard with other scanners on the labelled corpus.
+"""Compare slopaudit with other scanners on the labelled corpus.
 
 Every other tool is run as an external program and only its JSON report is read. Nothing from
 those tools is imported, vendored or copied.
@@ -30,12 +30,12 @@ from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
-from slopguard import __version__
-from slopguard.bench import parse_expected
-from slopguard.config import Config
-from slopguard.context import build_project
-from slopguard.engine import discover, run_scan
-from slopguard.rules import all_rules
+from slopaudit import __version__
+from slopaudit.bench import parse_expected
+from slopaudit.config import Config
+from slopaudit.context import build_project
+from slopaudit.engine import discover, run_scan
+from slopaudit.rules import all_rules
 
 LEVELS = {"low": 1, "medium": 2, "high": 3}
 CATEGORIES = {
@@ -78,7 +78,7 @@ def rel_path(raw: str, corpus: Path) -> str:
         return raw
 
 
-def run_slopguard(corpus: Path) -> ToolRun:
+def run_slopaudit(corpus: Path) -> ToolRun:
     started = time.time()
     config = Config()
     project = build_project(corpus, config, network=False)
@@ -89,7 +89,7 @@ def run_slopguard(corpus: Path) -> ToolRun:
     findings: dict[str, list[tuple[str, str]]] = defaultdict(list)
     for f in result.findings:
         findings[f.path].append((f.rule_id, sev[f.severity.label]))
-    return ToolRun("slopguard", __version__, time.time() - started, dict(findings))
+    return ToolRun("slopaudit", __version__, time.time() - started, dict(findings))
 
 
 def run_bandit(exe: str, corpus: Path) -> ToolRun:
@@ -170,7 +170,7 @@ def summarise(tools: list[ToolRun], vulnerable: dict[str, set[str]], safe: list[
 
 def markdown(tools, vulnerable, safe, rules_rev: str) -> str:
     lines = [
-        "# Benchmark: slopguard against other scanners",
+        "# Benchmark: slopaudit against other scanners",
         "",
         f"Generated {date.today().isoformat()} by `benchmarks/compare.py`. Do not edit by hand.",
         "",
@@ -178,7 +178,7 @@ def markdown(tools, vulnerable, safe, rules_rev: str) -> str:
         "",
         f"- **Corpus:** {len(vulnerable)} files with known problems and {len(safe)} safe files in "
         "`benchmarks/corpus/`. The maintainers wrote it, and it is built around the problems "
-        "slopguard targets. It is a *coverage* check on LLM-era problems, **not** a general quality "
+        "slopaudit targets. It is a *coverage* check on LLM-era problems, **not** a general quality "
         "ranking: Bandit and Semgrep are broader tools that were not built for these cases.",
         "- **Method:** each tool runs as an external program and only its JSON report is read. "
         "A tool *flags* a file if it reports at least one finding at or above the severity shown "
@@ -189,8 +189,8 @@ def markdown(tools, vulnerable, safe, rules_rev: str) -> str:
         "(missing user id, missing system prompt, no error handling), so it is reported as its own "
         "row instead of being mixed with the security rules. The rules are used locally for this "
         "comparison only and are not redistributed.",
-        "- **vibechck** is AGPL-3.0. It is run as a black box and none of its code is used by slopguard.",
-        "- slopguard's own rules were tuned against this corpus, so its numbers here are optimistic. "
+        "- **vibechck** is AGPL-3.0. It is run as a black box and none of its code is used by slopaudit.",
+        "- slopaudit's own rules were tuned against this corpus, so its numbers here are optimistic. "
         "The two files labelled `gap_*` are known misses and count against it.",
         "",
     ]
@@ -240,7 +240,7 @@ def main() -> int:
 
     corpus = args.corpus.resolve()
     vulnerable, safe = label_files(corpus)
-    tools = [run_slopguard(corpus)]
+    tools = [run_slopaudit(corpus)]
     if args.bandit:
         tools.append(run_bandit(args.bandit, corpus))
     for spec in args.semgrep_set if args.semgrep else []:

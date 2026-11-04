@@ -12,11 +12,11 @@ import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from slopguard.config import DEFAULT_EXCLUDE_DIRS, Config
-from slopguard.context import FileContext, ProjectContext
-from slopguard.models import Finding, Rule
+from slopaudit.config import DEFAULT_EXCLUDE_DIRS, Config
+from slopaudit.context import FileContext, ProjectContext
+from slopaudit.models import Finding, Rule
 
-SUPPRESSION = re.compile(r"#\s*slopguard:\s*ignore(?:\[([^\]]*)\])?")
+SUPPRESSION = re.compile(r"#\s*slopaudit:\s*ignore(?:\[([^\]]*)\])?")
 LOCK_FILES = frozenset(
     {"package-lock.json", "yarn.lock", "poetry.lock", "uv.lock", "Pipfile.lock", "pnpm-lock.yaml"}
 )
@@ -35,7 +35,7 @@ def find_root(paths: list[Path]) -> Path:
     start = paths[0].resolve() if paths else Path.cwd()
     folder = start if start.is_dir() else start.parent
     for candidate in (folder, *folder.parents):
-        if any((candidate / m).exists() for m in (".git", "slopguard.toml", "pyproject.toml")):
+        if any((candidate / m).exists() for m in (".git", "slopaudit.toml", "pyproject.toml")):
             return candidate
     return folder
 

@@ -17,7 +17,7 @@ import ast
 import re
 from dataclasses import dataclass
 
-from slopguard.config import Config
+from slopaudit.config import Config
 
 MODEL_SOURCE_SUFFIXES = (
     "messages.create",

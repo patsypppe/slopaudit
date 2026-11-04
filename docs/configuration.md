@@ -1,14 +1,14 @@
 # Configuration
 
-slopguard reads, in this order, the first it finds:
+slopaudit reads, in this order, the first it finds:
 
 1. the file given with `--config`;
-2. `slopguard.toml` in the project root;
-3. the `[tool.slopguard]` table in `pyproject.toml`, with the same keys as below
-   (for example `[tool.slopguard.scan]`).
+2. `slopaudit.toml` in the project root;
+3. the `[tool.slopaudit]` table in `pyproject.toml`, with the same keys as below
+   (for example `[tool.slopaudit.scan]`).
 
 The project root is the nearest folder above the scanned path that contains `.git`,
-`slopguard.toml` or `pyproject.toml`. Run `slopguard init` for a commented starter file.
+`slopaudit.toml` or `pyproject.toml`. Run `slopaudit init` for a commented starter file.
 
 Every setting is optional. Unknown module names, bad types and unknown providers are errors
 (exit code 2) so typos do not silently do nothing.
@@ -66,7 +66,7 @@ enabled = false
 | Key | Default | Meaning |
 | --- | --- | --- |
 | `registry_lookups` | `true` | Ask PyPI whether imported packages exist (HAL-01, HAL-02). `--no-network` overrides it for one run. |
-| `cache_ttl_hours` | `24` | How long answers are cached. The cache lives in `$SLOPGUARD_CACHE_DIR`, or `$XDG_CACHE_HOME/slopguard`, or `~/.cache/slopguard`. |
+| `cache_ttl_hours` | `24` | How long answers are cached. The cache lives in `$SLOPAUDIT_CACHE_DIR`, or `$XDG_CACHE_HOME/slopaudit`, or `~/.cache/slopaudit`. |
 
 Only package names are sent to PyPI, never your code.
 
@@ -112,7 +112,7 @@ Used only by `scan --spec --llm`, `gen-tests` and `fix`.
 | Key | Default | Meaning |
 | --- | --- | --- |
 | `provider` | `"none"` | `anthropic`, `openai`, `ollama`, or `none` |
-| `model` | none | Model ID. **No default**, because names change. `SLOPGUARD_LLM_MODEL` also works. |
+| `model` | none | Model ID. **No default**, because names change. `SLOPAUDIT_LLM_MODEL` also works. |
 | `base_url` | provider default | Use a proxy, a gateway, or another host. Ollama defaults to `http://localhost:11434`. |
 
 Keys are read from the environment, never from this file: `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`.
@@ -132,6 +132,6 @@ Where generated tests run (`gen-tests --run`).
 | Variable | Used for |
 | --- | --- |
 | `ANTHROPIC_API_KEY`, `OPENAI_API_KEY` | Model provider keys |
-| `SLOPGUARD_LLM_MODEL` | Model ID when `[llm] model` is not set |
-| `SLOPGUARD_CACHE_DIR` | Where PyPI answers are cached |
+| `SLOPAUDIT_LLM_MODEL` | Model ID when `[llm] model` is not set |
+| `SLOPAUDIT_CACHE_DIR` | Where PyPI answers are cached |
 | `NO_COLOR` | Turns off colour in terminal output |

@@ -10,7 +10,7 @@ Python.
 
 ## Decision
 
-slopguard 1.0 analyses **Python only**. JavaScript and TypeScript files are ignored, silently, as
+slopaudit 1.0 analyses **Python only**. JavaScript and TypeScript files are ignored, silently, as
 any other unsupported file type.
 
 ## Why
@@ -32,6 +32,6 @@ any other unsupported file type.
 
 ## Consequences
 
-- The README says "Python" wherever it matters, and `slopguard scan` on a JS project reports
+- The README says "Python" wherever it matters, and `slopaudit scan` on a JS project reports
   `0 files scanned`. That is easy to misread as "clean", so the terminal output should say when no
   supported files were found (tracked as a follow-up).
