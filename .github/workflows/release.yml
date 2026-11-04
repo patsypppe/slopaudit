@@ -23,6 +23,7 @@ jobs:
           python -m pip install build twine
           python -m build
           twine check dist/*
+          python scripts/check_dist.py dist
       - name: Test the wheel in a clean environment
         run: |
           python -m venv /tmp/clean
@@ -51,9 +52,10 @@ jobs:
         with:
           name: dist
           path: dist/
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086  # v1.14.3
         with:
           repository-url: https://test.pypi.org/legacy/
+          skip-existing: true   # dry runs can be repeated for the same version
 
   publish-pypi:
     if: startsWith(github.ref, 'refs/tags/')
@@ -67,4 +69,4 @@ jobs:
         with:
           name: dist
           path: dist/
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086  # v1.14.3

@@ -44,6 +44,17 @@ slopguard scan --help
 
 If that works, you know the packaging, the publisher setup and the workflow are all correct.
 
+### What the first dry run already proved
+
+The workflow was run once on 2026-11-04 before any publisher existed. The build job passed, including
+the clean-wheel install and the artifact upload, the publish job downloaded the artifact, and then PyPI
+answered `invalid-publisher`. That is the expected result until step 1 is done, and it means everything
+before the upload works. The error prints the exact values PyPI saw (`repository`, `workflow_ref`,
+`environment`), which should match the table above. After registering the publisher, re-run it.
+
+Dry runs are repeatable: the TestPyPI step uses `skip-existing`, so running it twice for the same
+version does not fail with "File already exists".
+
 ## Each release
 
 1. Update `__version__` in `src/slopguard/__init__.py` and move the changelog entry from
@@ -66,6 +77,18 @@ Do not publish `1.0.0` until these are true. They are listed in the changelog as
 - [ ] `scan --spec --llm`, `gen-tests` and `fix` have been run against a live provider on a real project.
 - [ ] The Docker sandbox backend has been run once on a machine with a Docker daemon.
 - [ ] The CI run on the release tag is green on Python 3.10 to 3.13.
+
+## What the pipeline checks for you
+
+- `twine check` validates the package metadata.
+- `scripts/check_dist.py` fails the build if the PyPI description would contain relative links (PyPI has
+  no repository to resolve them against), if the content type is wrong, or if the wheel lacks the typing
+  marker. The README is written with normal relative links; the build rewrites them to absolute GitHub
+  URLs in the published description only (`hatch-fancy-pypi-readme`, configured in `pyproject.toml`).
+- The wheel is installed in a clean virtual environment and run before anything is published.
+- The publishing action is pinned to a commit (`@7245906...  # v1.14.3`) because that job holds the
+  publishing identity. Dependabot proposes updates to the pin as normal pull requests; read the release
+  notes before merging one.
 
 ## If something goes wrong
 

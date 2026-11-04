@@ -47,6 +47,13 @@ were tightened ([details](docs/real-world-check.md)):
   `Makefile`, `.editorconfig` and a pre-commit config.
 - A release workflow that dry-runs to TestPyPI and publishes to PyPI by trusted publishing.
 
+### Release pipeline
+
+- The PyPI description no longer has broken relative links: the build rewrites them to absolute GitHub
+  URLs, and `scripts/check_dist.py` fails the build if any remain.
+- The publishing action is pinned to a commit, and repeated TestPyPI dry runs no longer fail on an
+  existing version.
+
 ### Safety
 
 - `slopguard fix` never sends a file containing a hardcoded credential to a model.

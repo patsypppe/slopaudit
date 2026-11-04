@@ -43,6 +43,7 @@ jobs:
           python -m pip install build twine
           python -m build
           twine check dist/*
+          python scripts/check_dist.py dist
       - name: Install the wheel in a clean environment and run it
         run: |
           python -m venv /tmp/clean
