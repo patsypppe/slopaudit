@@ -7,6 +7,11 @@ By taking part you agree to follow the [code of conduct](CODE_OF_CONDUCT.md).
 
 ## Ways to help, easiest first
 
+The [contributor roadmap](https://github.com/patsypppe/slopguard/issues/85) lists every open issue by area
+and difficulty. Good first issues are labelled
+[`good first issue`](https://github.com/patsypppe/slopguard/labels/good%20first%20issue).
+
+
 1. **Report a false positive or a miss** with the smallest code that shows it. Use the
    [issue forms](https://github.com/patsypppe/slopguard/issues/new/choose). Each confirmed report becomes a
    regression test.

@@ -214,8 +214,9 @@ Contributions are welcome: rules, false-positive reports, docs and tests. The mo
 do is **report a false positive or a miss with the smallest code that shows it**; every confirmed report
 becomes a regression test.
 
-**Looking for something to work on?** Every open issue says why it matters, which files to change, and
-when it is done:
+**Looking for something to work on?** The [contributor roadmap](https://github.com/patsypppe/slopguard/issues/85)
+lists every open issue by area and difficulty. Each one says why it matters, which files to change, and when
+it is done:
 
 | Start here | |
 | --- | --- |
