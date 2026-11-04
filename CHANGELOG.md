@@ -59,6 +59,10 @@ were tightened ([details](docs/real-world-check.md)):
 - `slopguard fix` never sends a file containing a hardcoded credential to a model.
 - The terminal output warns when no supported files were found, so an unsupported language is not mistaken for a clean scan.
 
+### Fixed
+
+- The docs now say `python3` where macOS has no `python`, and `make` defaults to `python3`.
+
 ### Removed
 
 - The `[llm] max_tokens` setting, which was accepted but never used.

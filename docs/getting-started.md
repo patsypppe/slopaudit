@@ -10,10 +10,14 @@ slopguard is not on PyPI yet (see [releasing](releasing.md)). Until it is, insta
 ```bash
 git clone https://github.com/patsypppe/slopguard
 cd slopguard
-python -m venv .venv && . .venv/bin/activate
+python3 -m venv .venv && . .venv/bin/activate
 pip install -e .
 slopguard --version
 ```
+
+**Platform notes.** On macOS and most Linux systems the command is `python3`, not `python`
+(`python: command not found` just means that). On Windows use `py -m venv .venv` and
+`.venv\Scripts\activate`. On macOS, `brew install pipx` gives you `pipx`.
 
 Once published, use `pipx install --pre slopguard` (or `pip install --pre slopguard` inside a
 virtual environment). `pipx` keeps the tool out of your project's dependencies.

@@ -36,7 +36,7 @@ your approval, and restrict deployment branches and tags to `v*`.
 **3. Dry run on TestPyPI.** Actions, Release, Run workflow, branch `main`. When it finishes:
 
 ```bash
-python -m venv /tmp/try && . /tmp/try/bin/activate
+python3 -m venv /tmp/try && . /tmp/try/bin/activate
 pip install --pre --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ slopguard
 slopguard --version
 slopguard scan --help

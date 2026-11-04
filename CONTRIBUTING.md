@@ -26,7 +26,7 @@ VS Code with the Dev Containers extension. The `.devcontainer` installs everythi
 ```bash
 git clone https://github.com/patsypppe/slopguard
 cd slopguard
-python -m venv .venv && . .venv/bin/activate
+python3 -m venv .venv && . .venv/bin/activate
 make install        # pip install -e ".[dev]"
 make check          # lint, tests, scan itself, benchmark gate: what CI runs
 ```

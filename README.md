@@ -54,7 +54,7 @@ Not on PyPI yet. From a clone:
 ```bash
 git clone https://github.com/patsypppe/slopguard
 cd slopguard
-python -m venv .venv && . .venv/bin/activate
+python3 -m venv .venv && . .venv/bin/activate
 pip install -e .
 slopguard --version
 ```

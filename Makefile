@@ -1,6 +1,6 @@
 .PHONY: help install test lint scan bench check docs build clean
 
-PY ?= python
+PY ?= python3
 
 help:           ## list the targets
 	@grep -E '^[a-z]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*##/\t/' | sort

@@ -25,8 +25,11 @@ See the [decision record](decisions/0001-javascript-typescript.md). In short: th
 Python-specific flow analysis and its measured accuracy, and a thin second language would dilute it.
 
 **Which operating systems work?**
-Scanning is plain Python and should run anywhere Python 3.10+ does, but CI only runs on Linux. The
-sandbox backends need Linux (Docker also on macOS). macOS and Windows are untested; please report what you find.
+Scanning is plain Python and should run anywhere Python 3.10+ does, but CI only runs on Linux. Installing
+from TestPyPI and running `slopguard --version` and `slopguard rules` has been confirmed by the maintainer on
+macOS (Python 3.15). A full scan on macOS, and anything on Windows, is untested; please report what you find
+([#6](https://github.com/patsypppe/slopguard/issues/6) tracks adding both to CI). The sandbox backends need
+Linux (Docker also works on macOS).
 
 **How fast is it?**
 About 100,000 lines of Python take a few seconds. A 930,000-line package scanned in under a minute.
