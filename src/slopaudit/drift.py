@@ -8,8 +8,8 @@ from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from slopguard.config import Config
-from slopguard.engine import discover
+from slopaudit.config import Config
+from slopaudit.engine import discover
 
 TEST_PATH = re.compile(r"(^|/)(tests?/|test_[^/]*\.py$|[^/]*_test\.py$|conftest\.py$)")
 SNAKE = re.compile(r"^_*[a-z][a-z0-9_]*$")

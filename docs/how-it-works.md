@@ -23,14 +23,14 @@ flowchart LR
    run. A file that does not parse becomes finding INC-08, and the other rules skip it.
 3. **Rules.** Each rule is a small class that looks at one file and yields findings. A rule that crashes
    is reported as a warning and never stops the scan.
-4. **Suppress and filter.** Inline `# slopguard: ignore[...]` comments, per-rule path ignores, the
+4. **Suppress and filter.** Inline `# slopaudit: ignore[...]` comments, per-rule path ignores, the
    baseline and `--severity` remove findings.
 5. **Report.** Terminal, JSON, Markdown or SARIF.
 
 ## The taint tracker
 
 Most of the LLM rules ask one question: **can data from a risky place reach a dangerous place?**
-slopguard tracks three kinds of flow, each with its own sources and sinks.
+slopaudit tracks three kinds of flow, each with its own sources and sinks.
 
 | Flow | Starts at (source) | Ends at (sink) | Rules |
 | --- | --- | --- | --- |
@@ -84,6 +84,6 @@ measured, not hidden.
 ## Measuring it
 
 Rules are tuned against three things, all reproducible from the repository: a labelled corpus
-(`slopguard bench`), other scanners on that corpus (`benchmarks/compare.py`), and 1.5 million lines of
+(`slopaudit bench`), other scanners on that corpus (`benchmarks/compare.py`), and 1.5 million lines of
 well-reviewed packages as a false-positive control (`benchmarks/realworld.py`). See the
 [benchmarks](benchmarks.md) and the [real-world check](real-world-check.md), including their caveats.

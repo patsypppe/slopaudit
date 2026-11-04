@@ -1,5 +1,5 @@
 name: Missed problem
-description: slopguard should have reported something and did not
+description: slopaudit should have reported something and did not
 labels: ["false-negative"]
 body:
   - type: markdown
@@ -24,6 +24,6 @@ body:
   - type: input
     id: version
     attributes:
-      label: slopguard version
+      label: slopaudit version
     validations:
       required: true

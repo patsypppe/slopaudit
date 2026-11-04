@@ -23,7 +23,7 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
-from slopguard.config import DEFAULT_EXCLUDE_DIRS
+from slopaudit.config import DEFAULT_EXCLUDE_DIRS
 
 MAX_COPY_BYTES = 50 * 1024 * 1024
 MAX_OUTPUT = 6000
@@ -124,7 +124,7 @@ def run_tests(
 ) -> TestRun:
     """Copy the project, add ``test_sources`` (relative path -> code) and run them."""
     chosen = pick_backend(backend)
-    with tempfile.TemporaryDirectory(prefix="slopguard-") as tmp:
+    with tempfile.TemporaryDirectory(prefix="slopaudit-") as tmp:
         work = Path(tmp) / "work"
         copy_project(project_root, work)
         targets = []
@@ -133,7 +133,7 @@ def run_tests(
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(code)
             targets.append(rel)
-        report = "slopguard-report.xml"
+        report = "slopaudit-report.xml"
         pytest_args = ["-m", "pytest", "-q", "--no-header", "-p", "no:cacheprovider",
                        f"--junitxml={report}", *targets]
         env = {"PATH": os.environ.get("PATH", ""), "HOME": tmp, "PYTHONDONTWRITEBYTECODE": "1",
@@ -164,7 +164,7 @@ def run_tests(
         results: dict[str, str] = {}
         report_path = work / report
         if report_path.exists():
-            from slopguard.regress import _read_junit
+            from slopaudit.regress import _read_junit
 
             results = _read_junit(report_path)
         return TestRun(chosen, started.returncode, (output or "")[-MAX_OUTPUT:], timed_out, results)

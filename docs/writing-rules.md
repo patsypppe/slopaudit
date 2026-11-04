@@ -6,15 +6,15 @@ particular the [clean-room rule](clean-room.md): write your own implementation f
 ## Anatomy
 
 ```python
-# src/slopguard/rules/example.py
+# src/slopaudit/rules/example.py
 from __future__ import annotations
 
 import ast
 from collections.abc import Iterable
 
-from slopguard.context import FileContext
-from slopguard.models import Finding, Rule, RuleMeta, Severity
-from slopguard.rules import register
+from slopaudit.context import FileContext
+from slopaudit.models import Finding, Rule, RuleMeta, Severity
+from slopaudit.rules import register
 
 
 @register
@@ -41,7 +41,7 @@ class TodoReturn(Rule):
 ```
 
 Register the module by adding it to the import list at the bottom of
-`src/slopguard/rules/__init__.py`.
+`src/slopaudit/rules/__init__.py`.
 
 ### What `FileContext` gives you
 
@@ -91,7 +91,7 @@ line is the label:
 # expect: INC-99
 ```
 
-or `# expect: none` for safe files. `slopguard bench --min-precision 0.85` must still pass. If your rule
+or `# expect: none` for safe files. `slopaudit bench --min-precision 0.85` must still pass. If your rule
 has a known blind spot, add a file named `gap_<what>.py` that labels the correct answer, so the miss is
 measured instead of hidden.
 

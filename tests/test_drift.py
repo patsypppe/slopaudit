@@ -4,7 +4,7 @@ import subprocess
 from conftest import ids
 from typer.testing import CliRunner
 
-from slopguard.cli import app
+from slopaudit.cli import app
 
 BASELINE = {
     f"app/mod{i}.py": (

@@ -1,6 +1,6 @@
 # Privacy and safety
 
-## What slopguard does with your code
+## What slopaudit does with your code
 
 | Activity | Runs your code? | Sends anything off your machine? |
 | --- | --- | --- |
@@ -14,7 +14,7 @@
 | `fix` | No | Each file that has serious findings, plus the findings, to your provider |
 
 There is **no telemetry**. Nothing is sent anywhere unless the table says so. Before any model call
-slopguard prints which provider and what kind of data, to standard error.
+slopaudit prints which provider and what kind of data, to standard error.
 
 Model features are off until you configure `[llm]`. The scan never needs a model.
 
@@ -27,7 +27,7 @@ Model features are off until you configure `[llm]`. The scan never needs a model
 
 ## The sandbox for generated tests
 
-Model-written tests are untrusted code, so `gen-tests --run` runs them in a sandbox. First, slopguard
+Model-written tests are untrusted code, so `gen-tests --run` runs them in a sandbox. First, slopaudit
 rejects generated files that do not parse, contain no tests, or import `subprocess`, `socket` or common
 network libraries, but that is only a first filter.
 
@@ -40,11 +40,11 @@ network libraries, but that is only a first filter.
 `auto` picks Docker, then `unshare`, and **refuses to run** if neither works rather than run
 unisolated. The project is copied (50 MB cap) so tests cannot modify your working tree.
 
-## What slopguard cannot promise
+## What slopaudit cannot promise
 
 - A clean scan is not a proof of safety. The flow rules follow values inside one function only; see
   [how it works](how-it-works.md#what-it-cannot-see).
-- `fix` proposals are re-checked by slopguard's own rules, which catch what the rules know about. Review
+- `fix` proposals are re-checked by slopaudit's own rules, which catch what the rules know about. Review
   every diff. The default is a dry run.
 - Generated tests can be wrong. A failing one lowers a verdict to "partial"; it does not prove the code
   is wrong.

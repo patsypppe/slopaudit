@@ -5,13 +5,17 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [1.0.0] - 2026-11-04
 
-First stable release. **What 1.0 promises:** the scanner (`scan`, every rule not marked experimental, the
+First stable release, and the first on PyPI. **Renamed from `slopguard` to `slopaudit`**, because PyPI
+refused the old name as too similar to existing projects ([decision 0003](docs/decisions/0003-renamed-to-slopaudit.md)).
+The command is `slopaudit`, the config file `slopaudit.toml`, and suppressions are `# slopaudit: ignore[...]`.
+
+**What 1.0 promises:** the scanner (`scan`, every rule not marked experimental, the
 output formats, configuration, baselines and suppressions), `regress`, `bench`, the Python API, the GitHub
 Action and the pre-commit hook. Breaking changes to these wait for 2.0.
 
 **Experimental, outside that promise:** `scan --spec --llm`, `gen-tests`, `fix` and the Docker sandbox
 backend. They are tested against local stand-ins, not live services, and may change in a minor release.
-Rules marked `experimental` in `slopguard rules` may also change. See
+Rules marked `experimental` in `slopaudit rules` may also change. See
 [decision 0002](docs/decisions/0002-what-1-0-promises.md).
 
 ### Fixed since 1.0.0rc2
@@ -21,9 +25,9 @@ Rules marked `experimental` in `slopguard rules` may also change. See
 - A `pyproject.toml` or `setup.cfg` that only holds tool settings (such as `[tool.ruff]` or `[flake8]`) no
   longer counts as a manifest that declares nothing, which made HAL-04 flag every third-party import.
 
-## [1.0.0rc2] - TestPyPI only
+## [1.0.0rc2] - TestPyPI only, as `slopguard`
 
-Fixes from running slopguard on a real project (an agent with fixture packages and a Postgres store).
+Fixes from running slopaudit on a real project (an agent with fixture packages and a Postgres store).
 
 ### Fixed
 
@@ -36,24 +40,24 @@ Fixes from running slopguard on a real project (an agent with fixture packages a
 - SEC-01 reports credentials named like test data (`FAKE_KEY`, `TEST_API_KEY`) as low severity, so they no
   longer fail builds. Normal names stay critical, and "latest" is not mistaken for "test".
 
-## [1.0.0rc1] - TestPyPI only
+## [1.0.0rc1] - TestPyPI only, as `slopguard`
 
 First release candidate. Not yet published to PyPI.
 
 ### Added
 
-- `slopguard scan` with terminal, JSON, Markdown and SARIF 2.1.0 output; `--diff`, `--staged`,
-  baselines, inline suppressions, and `slopguard.toml` or `[tool.slopguard]` configuration.
+- `slopaudit scan` with terminal, JSON, Markdown and SARIF 2.1.0 output; `--diff`, `--staged`,
+  baselines, inline suppressions, and `slopaudit.toml` or `[tool.slopaudit]` configuration.
 - Rules: SEC-01; LLM-01 to LLM-06, LLM-08, LLM-09, LLM-12; HAL-01 to HAL-04; INC-01, INC-02,
   INC-04, INC-05, INC-06, INC-08. See [docs/rules.md](docs/rules.md).
 - A taint tracker for model output, untrusted input and agent-tool arguments (within one function).
 - `scan --spec` requirement checking (SPC-02), with an offline heuristic and optional model judging.
 - Opt-in style drift rules DRF-01 to DRF-03.
-- `slopguard regress` for deleted, skipped or weakened tests and tests that stopped passing (REG-01, REG-02).
-- `slopguard gen-tests` with a sandbox (Docker, Linux namespaces, or explicit local).
-- `slopguard fix`, a verify-and-repair loop that is a dry run unless `--apply` is given.
+- `slopaudit regress` for deleted, skipped or weakened tests and tests that stopped passing (REG-01, REG-02).
+- `slopaudit gen-tests` with a sandbox (Docker, Linux namespaces, or explicit local).
+- `slopaudit fix`, a verify-and-repair loop that is a dry run unless `--apply` is given.
 - LLM clients for Anthropic, OpenAI and Ollama over plain HTTPS.
-- `slopguard bench`, a labelled corpus, `benchmarks/compare.py` and `benchmarks/realworld.py`.
+- `slopaudit bench`, a labelled corpus, `benchmarks/compare.py` and `benchmarks/realworld.py`.
 - A composite GitHub Action that uploads SARIF, a pre-commit hook, CI and release workflows.
 
 ### Changed after the real-world check
@@ -73,9 +77,9 @@ were tightened ([details](docs/real-world-check.md)):
 
 ### Added since the first draft of this release
 
-- `slopguard.scan()` and `slopguard.scan_source()`, a supported Python API with a `py.typed` marker.
+- `slopaudit.scan()` and `slopaudit.scan_source()`, a supported Python API with a `py.typed` marker.
 - `[packages] private` to tell the HAL rules about imports from a private index.
-- Generated reference pages (`slopguard.docgen`) kept in sync by tests, a full documentation set, and
+- Generated reference pages (`slopaudit.docgen`) kept in sync by tests, a full documentation set, and
   contributor files: code of conduct, support guide, issue and pull-request templates, Dependabot,
   `Makefile`, `.editorconfig` and a pre-commit config.
 - A release workflow that dry-runs to TestPyPI and publishes to PyPI by trusted publishing.
@@ -89,7 +93,7 @@ were tightened ([details](docs/real-world-check.md)):
 
 ### Safety
 
-- `slopguard fix` never sends a file containing a hardcoded credential to a model.
+- `slopaudit fix` never sends a file containing a hardcoded credential to a model.
 - The terminal output warns when no supported files were found, so an unsupported language is not mistaken for a clean scan.
 
 ### Fixed

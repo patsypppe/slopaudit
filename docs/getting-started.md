@@ -6,13 +6,13 @@ and `regress`).
 ## 1. Install
 
 ```bash
-pipx install slopguard             # recommended; or: uv tool install slopguard
-slopguard --version
+pipx install slopaudit             # recommended; or: uv tool install slopaudit
+slopaudit --version
 ```
 
 No pipx? `brew install pipx` on macOS, or `python3 -m pip install --user pipx` elsewhere, then
 `pipx ensurepath` and open a new terminal. You can also install into a virtual environment with
-`python3 -m pip install slopguard`, or try it once without installing: `pipx run slopguard --version`.
+`python3 -m pip install slopaudit`, or try it once without installing: `pipx run slopaudit --version`.
 
 **Platform notes.** On macOS and most Linux systems the command is `python3`, not `python`
 (`python: command not found` just means that). On Windows use `py` instead of `python3`.
@@ -20,13 +20,13 @@ No pipx? `brew install pipx` on macOS, or `python3 -m pip install --user pipx` e
 The demo below lives in the repository, so clone it to follow along:
 
 ```bash
-git clone https://github.com/patsypppe/slopguard && cd slopguard
+git clone https://github.com/patsypppe/slopaudit && cd slopaudit
 ```
 
 ## 2. Scan the demo
 
 ```bash
-slopguard scan examples/vulnerable_agent
+slopaudit scan examples/vulnerable_agent
 ```
 
 You will see findings grouped by file:
@@ -47,7 +47,7 @@ How to read a finding:
 | --- | --- |
 | `27` | Line number |
 | `CRITICAL` | Severity: `critical`, `high`, `medium`, `low` or `info` |
-| `LLM-02` | Rule ID. Run `slopguard explain LLM-02` for the long explanation |
+| `LLM-02` | Rule ID. Run `slopaudit explain LLM-02` for the long explanation |
 | `↳ ...` | For flow rules, the path from where the data came from to where it is used |
 | `fix:` | What to do about it |
 
@@ -58,7 +58,7 @@ The last line summarises the scan. Exit code `1` means at least one finding at o
 
 ```bash
 cd your-project
-slopguard scan .
+slopaudit scan .
 ```
 
 The first run does a few PyPI lookups to check that imported packages exist; they are cached for
@@ -68,26 +68,26 @@ are skipped automatically.
 **Adopting on an existing codebase?** Record what is there today, then fail only on new problems:
 
 ```bash
-slopguard scan . --write-baseline .slopguard-baseline.json
-slopguard scan . --baseline .slopguard-baseline.json
+slopaudit scan . --write-baseline .slopaudit-baseline.json
+slopaudit scan . --baseline .slopaudit-baseline.json
 ```
 
 ## 4. Deal with what it finds
 
-For each finding you can fix it, or tell slopguard it is intentional.
+For each finding you can fix it, or tell slopaudit it is intentional.
 
-- **Fix it.** `slopguard explain RULE-ID` says why it matters and how to fix it.
-- **It is intentional.** Add `# slopguard: ignore[RULE-ID] reason` on the line. See
+- **Fix it.** `slopaudit explain RULE-ID` says why it matters and how to fix it.
+- **It is intentional.** Add `# slopaudit: ignore[RULE-ID] reason` on the line. See
   [suppressing findings](suppressing-findings.md).
-- **It is noise.** Please [report a false positive](https://github.com/patsypppe/slopguard/issues/new/choose).
+- **It is noise.** Please [report a false positive](https://github.com/patsypppe/slopaudit/issues/new/choose).
   Rules are tuned against real code, and your example makes them better.
 
 ## 5. Put it in CI
 
-The shortest useful setup, in `.github/workflows/slopguard.yml`:
+The shortest useful setup, in `.github/workflows/slopaudit.yml`:
 
 ```yaml
-name: slopguard
+name: slopaudit
 on: [pull_request]
 permissions:
   contents: read
@@ -97,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: patsypppe/slopguard@main
+      - uses: patsypppe/slopaudit@main
 ```
 
 More options, pre-commit and GitLab are in [CI integration](ci-integration.md).
@@ -110,9 +110,9 @@ The scan itself never calls a model. Three commands can, when you configure a pr
 | --- | --- |
 | `scan --spec SPEC.md --llm` | Judges whether code meets each requirement |
 | `gen-tests` | Writes pytest tests for each requirement |
-| `fix` | Proposes repairs, which slopguard re-checks before keeping them |
+| `fix` | Proposes repairs, which slopaudit re-checks before keeping them |
 
-Create `slopguard.toml` (or run `slopguard init`) and set the provider, then export the key:
+Create `slopaudit.toml` (or run `slopaudit init`) and set the provider, then export the key:
 
 ```toml
 [llm]
@@ -122,10 +122,10 @@ model = "your-model-id"
 
 ```bash
 export ANTHROPIC_API_KEY=...
-slopguard scan src --spec SPEC.md --llm
+slopaudit scan src --spec SPEC.md --llm
 ```
 
-slopguard tells you what it is about to send before it sends it. Details in
+slopaudit tells you what it is about to send before it sends it. Details in
 [privacy and safety](privacy-and-safety.md).
 
 ## Where next

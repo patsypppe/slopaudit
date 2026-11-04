@@ -1,4 +1,4 @@
-# slopguard documentation
+# slopaudit documentation
 
 | Start here | |
 | --- | --- |
@@ -8,11 +8,11 @@
 
 | Guides | |
 | --- | --- |
-| [Configuration](configuration.md) | Every `slopguard.toml` setting |
+| [Configuration](configuration.md) | Every `slopaudit.toml` setting |
 | [Beyond scanning](beyond-scanning.md) | Spec checks, generated tests, style drift, regression guard, repair loop |
 | [Suppressing findings](suppressing-findings.md) | Inline comments, baselines, per-rule ignores |
 | [CI integration](ci-integration.md) | GitHub Action, pre-commit, GitLab CI, SARIF, diff scanning |
-| [Python API](python-api.md) | Use slopguard from your own code or agent |
+| [Python API](python-api.md) | Use slopaudit from your own code or agent |
 | [Privacy and safety](privacy-and-safety.md) | What leaves your machine, what runs, and the sandbox |
 | [FAQ and troubleshooting](faq.md) | Common questions and fixes |
 

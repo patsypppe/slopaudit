@@ -3,12 +3,12 @@ import pytest
 from conftest import ScriptedProvider
 from typer.testing import CliRunner
 
-from slopguard.cli import app
-from slopguard.config import Config
-from slopguard.context import build_project
-from slopguard.models import Severity
-from slopguard.repair import judge_candidate, repair
-from slopguard.rules import all_rules
+from slopaudit.cli import app
+from slopaudit.config import Config
+from slopaudit.context import build_project
+from slopaudit.models import Severity
+from slopaudit.repair import judge_candidate, repair
+from slopaudit.rules import all_rules
 
 BAD = (
     "def solve(client, question):\n"
@@ -94,7 +94,7 @@ def test_model_failure_is_reported_not_raised(setup):
         name, model = "broken", "x"
 
         def complete(self, system, prompt, max_tokens=1024):
-            from slopguard.llm import LLMError
+            from slopaudit.llm import LLMError
 
             raise LLMError("boom")
 
@@ -110,7 +110,7 @@ def test_oversized_files_are_not_sent(setup):
 
 
 def test_judge_candidate_reports_counts(setup):
-    from slopguard.engine import scan_text
+    from slopaudit.engine import scan_text
 
     rules, project = setup
     before = scan_text("app.py", BAD, rules, project)
@@ -124,7 +124,7 @@ def test_judge_candidate_reports_counts(setup):
 @pytest.fixture
 def repo(tmp_path, fake_llm, monkeypatch):
     monkeypatch.setenv("ANTHROPIC_API_KEY", "k")
-    (tmp_path / "slopguard.toml").write_text(
+    (tmp_path / "slopaudit.toml").write_text(
         f'[llm]\nprovider = "anthropic"\nmodel = "m"\nbase_url = "{fake_llm["url"]}"\n')
     (tmp_path / "app.py").write_text(BAD)
     fake_llm["answers"].append(fenced(FIXED))

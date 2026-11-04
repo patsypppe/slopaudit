@@ -4,8 +4,8 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from slopguard.cli import app
-from slopguard.rules import all_rules
+from slopaudit.cli import app
+from slopaudit.rules import all_rules
 
 runner = CliRunner()
 
@@ -28,7 +28,7 @@ def invoke(*args: str):
 
 
 def test_version_and_help():
-    assert "slopguard" in invoke("--version").stdout
+    assert "slopaudit" in invoke("--version").stdout
     assert "scan" in invoke("--help").stdout
 
 
@@ -70,7 +70,7 @@ def test_sarif_output_structure(project, tmp_path):
 
 def test_markdown_output(project):
     result = invoke("scan", str(project), "--no-network", "-f", "markdown")
-    assert result.stdout.startswith("# slopguard report")
+    assert result.stdout.startswith("# slopaudit report")
     assert "`LLM-02`" in result.stdout
 
 
@@ -90,7 +90,7 @@ def test_rule_and_module_filters(project):
 
 def test_inline_suppression(project):
     lines = DANGEROUS.splitlines()
-    lines[2] += "  # slopguard: ignore[LLM-02] reviewed"
+    lines[2] += "  # slopaudit: ignore[LLM-02] reviewed"
     (project / "bad.py").write_text("\n".join(lines) + "\n")
     result = invoke("scan", str(project), "--no-network", "-f", "json")
     assert json.loads(result.stdout)["findings"] == []
@@ -98,7 +98,7 @@ def test_inline_suppression(project):
 
 def test_suppression_on_previous_line(project):
     lines = DANGEROUS.splitlines()
-    lines.insert(2, "    # slopguard: ignore")
+    lines.insert(2, "    # slopaudit: ignore")
     (project / "bad.py").write_text("\n".join(lines) + "\n")
     result = invoke("scan", str(project), "--no-network", "-f", "json")
     assert json.loads(result.stdout)["findings"] == []
@@ -117,15 +117,15 @@ def test_baseline_roundtrip(project, tmp_path):
 
 
 def test_config_file_exclude_and_module_toggle(project):
-    (project / "slopguard.toml").write_text('[scan]\nexclude = ["bad.py"]\n')
+    (project / "slopaudit.toml").write_text('[scan]\nexclude = ["bad.py"]\n')
     result = invoke("scan", str(project), "--no-network")
     assert result.exit_code == 0
-    (project / "slopguard.toml").write_text("[modules]\nllm = false\n")
+    (project / "slopaudit.toml").write_text("[modules]\nllm = false\n")
     assert invoke("scan", str(project), "--no-network").exit_code == 0
 
 
 def test_pyproject_tool_section(project):
-    (project / "pyproject.toml").write_text('[tool.slopguard.scan]\nfail_on = "none"\n')
+    (project / "pyproject.toml").write_text('[tool.slopaudit.scan]\nfail_on = "none"\n')
     assert invoke("scan", str(project), "--no-network").exit_code == 0
 
 
@@ -146,7 +146,7 @@ def test_usage_errors_exit_2(args, project, monkeypatch):
 
 
 def test_invalid_config_exits_2(project):
-    (project / "slopguard.toml").write_text('[modules]\nbogus = true\n')
+    (project / "slopaudit.toml").write_text('[modules]\nbogus = true\n')
     result = invoke("scan", str(project), "--no-network")
     assert result.exit_code == 2
 
@@ -156,7 +156,7 @@ def test_rules_explain_init(tmp_path, monkeypatch):
     assert "Why it matters" in invoke("explain", "llm-02").stdout
     monkeypatch.chdir(tmp_path)
     assert invoke("init").exit_code == 0
-    assert (tmp_path / "slopguard.toml").exists()
+    assert (tmp_path / "slopaudit.toml").exists()
     assert invoke("init").exit_code == 2
     assert invoke("init", "--force").exit_code == 0
 
@@ -192,10 +192,10 @@ def test_default_excludes_skip_venv(project):
 def test_rules_reference_doc_is_up_to_date():
     from pathlib import Path
 
-    from slopguard.cli import rules_markdown
+    from slopaudit.cli import rules_markdown
 
     doc = Path(__file__).resolve().parent.parent / "docs" / "rules.md"
-    assert doc.read_text() == rules_markdown(), "run: slopguard rules --markdown > docs/rules.md"
+    assert doc.read_text() == rules_markdown(), "run: slopaudit rules --markdown > docs/rules.md"
     assert runner.invoke(app, ["rules", "--markdown"]).stdout == rules_markdown()
 
 

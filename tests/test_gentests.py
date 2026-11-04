@@ -4,16 +4,16 @@ import pytest
 from conftest import ScriptedProvider
 from typer.testing import CliRunner
 
-from slopguard.cli import app
-from slopguard.gentests import (
+from slopaudit.cli import app
+from slopaudit.gentests import (
     apply_test_results,
     generate_tests,
     interface_summary,
     validate_test_code,
 )
-from slopguard.llm import LLMError
-from slopguard.sandbox import TestRun
-from slopguard.spec import parse_spec, verify_spec
+from slopaudit.llm import LLMError
+from slopaudit.sandbox import TestRun
+from slopaudit.spec import parse_spec, verify_spec
 
 CODE = '''
 def round_total(value: float) -> float:
@@ -83,7 +83,7 @@ def test_no_results_leaves_verdicts_alone():
 
 def test_cli_gen_tests_end_to_end(tmp_path, fake_llm, monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "k")
-    (tmp_path / "slopguard.toml").write_text(
+    (tmp_path / "slopaudit.toml").write_text(
         f'[llm]\nprovider = "openai"\nmodel = "m"\nbase_url = "{fake_llm["url"]}"\n'
         '[sandbox]\nbackend = "local"\ntimeout = 60\n')
     (tmp_path / "mod.py").write_text(CODE)

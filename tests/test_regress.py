@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from slopguard.regress import RegressionError, regress, weakened_test_findings
+from slopaudit.regress import RegressionError, regress, weakened_test_findings
 
 GOOD_MODULE = "def add(a, b):\n    return a + b\n\ndef sub(a, b):\n    return a - b\n"
 GOOD_TESTS = (

@@ -1,6 +1,6 @@
 """Rules that need more than one file or an external run.
 
-They appear in ``slopguard rules`` and in SARIF output so their findings carry full
+They appear in ``slopaudit rules`` and in SARIF output so their findings carry full
 metadata, but their ``check`` does nothing during a normal scan. They are produced by
 ``scan --spec`` (SPC-02) and ``regress`` (REG-01, REG-02).
 """
@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from slopguard.context import FileContext
-from slopguard.models import Finding, Rule, RuleMeta, Severity
-from slopguard.rules import register
+from slopaudit.context import FileContext
+from slopaudit.models import Finding, Rule, RuleMeta, Severity
+from slopaudit.rules import register
 
 
 class _External(Rule):

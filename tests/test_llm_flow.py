@@ -100,7 +100,7 @@ def test_module_level_flow_and_nested_function(scan):
 
 
 def test_custom_source_and_sanitizer_from_config(scan):
-    from slopguard.config import Config
+    from slopaudit.config import Config
 
     cfg = Config(taint_sources=["myapp.ask"], taint_sanitizers=["myapp.safe"])
     source = (

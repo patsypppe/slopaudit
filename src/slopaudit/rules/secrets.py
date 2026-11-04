@@ -6,9 +6,9 @@ import math
 import re
 from collections.abc import Iterable
 
-from slopguard.context import FileContext
-from slopguard.models import Finding, Rule, RuleMeta, Severity
-from slopguard.rules import register
+from slopaudit.context import FileContext
+from slopaudit.models import Finding, Rule, RuleMeta, Severity
+from slopaudit.rules import register
 
 PROVIDER_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("Anthropic API key", re.compile(r"\bsk-ant-[A-Za-z0-9_-]{24,}")),

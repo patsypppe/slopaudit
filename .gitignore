@@ -9,4 +9,4 @@ build/
 .ruff_cache/
 .coverage
 htmlcov/
-.slopguard_cache/
+.slopaudit_cache/

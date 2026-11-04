@@ -9,10 +9,10 @@ from importlib import metadata
 from pathlib import Path
 from typing import Any
 
-from slopguard.config import DEFAULT_EXCLUDE_DIRS, Config
-from slopguard.manifest import declared_dependencies
-from slopguard.models import Finding, RuleMeta, Severity
-from slopguard.registry import RegistryClient
+from slopaudit.config import DEFAULT_EXCLUDE_DIRS, Config
+from slopaudit.manifest import declared_dependencies
+from slopaudit.models import Finding, RuleMeta, Severity
+from slopaudit.registry import RegistryClient
 
 
 @dataclass
@@ -30,7 +30,7 @@ class ProjectContext:
     def conventions(self) -> Any:
         """Style conventions mined from files outside the change (computed once)."""
         if self._conventions is None:
-            from slopguard.drift import mine_conventions
+            from slopaudit.drift import mine_conventions
 
             self._conventions = mine_conventions(self.root, self.config, self.changed or set())
         return self._conventions

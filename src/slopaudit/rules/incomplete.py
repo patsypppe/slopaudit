@@ -8,9 +8,9 @@ import re
 import tokenize
 from collections.abc import Iterable, Iterator
 
-from slopguard.context import FileContext
-from slopguard.models import Finding, Rule, RuleMeta, Severity
-from slopguard.rules import register
+from slopaudit.context import FileContext
+from slopaudit.models import Finding, Rule, RuleMeta, Severity
+from slopaudit.rules import register
 
 PLACEHOLDER_COMMENT = re.compile(
     r"""(?ix)
@@ -66,7 +66,7 @@ def comments_and_string_lines(ctx: FileContext) -> tuple[list[tuple[int, str]], 
                 fstring_starts.append(token.start[0])
             elif fstring_end is not None and token.type == fstring_end and fstring_starts:
                 string_lines.update(range(fstring_starts.pop(), token.end[0] + 1))
-    except (tokenize.TokenError, IndentationError, SyntaxError):  # slopguard: ignore[INC-04] partial tokens are fine
+    except (tokenize.TokenError, IndentationError, SyntaxError):  # slopaudit: ignore[INC-04] partial tokens are fine
         pass
     ctx.cache["tokens"] = (comments, string_lines)
     return comments, string_lines

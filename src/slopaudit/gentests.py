@@ -5,9 +5,9 @@ from __future__ import annotations
 import ast
 import re
 
-from slopguard.llm import LLMError, Provider, extract_code_block
-from slopguard.sandbox import TestRun
-from slopguard.spec import Evidence, Requirement, Verdict
+from slopaudit.llm import LLMError, Provider, extract_code_block
+from slopaudit.sandbox import TestRun
+from slopaudit.spec import Evidence, Requirement, Verdict
 
 MAX_CONTEXT_CHARS = 9000
 FORBIDDEN_IMPORTS = frozenset({"socket", "subprocess", "requests", "urllib", "httpx", "shutil"})

@@ -7,10 +7,10 @@ import sys
 from collections.abc import Iterable, Iterator
 from datetime import datetime, timezone
 
-from slopguard.context import FileContext
-from slopguard.models import Finding, Rule, RuleMeta, Severity
-from slopguard.registry import normalize
-from slopguard.rules import register
+from slopaudit.context import FileContext
+from slopaudit.models import Finding, Rule, RuleMeta, Severity
+from slopaudit.registry import normalize
+from slopaudit.rules import register
 
 # import name -> PyPI distribution names, where they differ
 ALIASES: dict[str, list[str]] = {
@@ -140,7 +140,7 @@ class NonexistentPackage(Rule):
             "exist fails, and an attacker can register it and ship malware (slopsquatting)."
         ),
         fix="Check the import. Use the real package name, or remove the dependency. If it comes "
-        "from a private index, list it under `[packages] private` in slopguard.toml.",
+        "from a private index, list it under `[packages] private` in slopaudit.toml.",
         cwe=("CWE-829",),
         owasp=("LLM03:2025 Supply Chain",),
     )

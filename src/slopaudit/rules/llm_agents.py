@@ -6,11 +6,11 @@ import ast
 import re
 from collections.abc import Iterable
 
-from slopguard.context import FileContext
-from slopguard.models import Finding, Rule, RuleMeta, Severity
-from slopguard.rules import register
-from slopguard.rules.llm_flow import flows_for
-from slopguard.taint import collect_tool_names, dotted_name, is_tool_function
+from slopaudit.context import FileContext
+from slopaudit.models import Finding, Rule, RuleMeta, Severity
+from slopaudit.rules import register
+from slopaudit.rules.llm_flow import flows_for
+from slopaudit.taint import collect_tool_names, dotted_name, is_tool_function
 
 OWASP_EXCESSIVE_AGENCY = "LLM06:2025 Excessive Agency"
 OWASP_UNBOUNDED = "LLM10:2025 Unbounded Consumption"

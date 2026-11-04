@@ -18,9 +18,9 @@ Release 1.0.0 now, and draw the line of the stability promise around what is ver
 | --- | --- |
 | `scan` and every rule marked `stable` | `scan --spec --llm` |
 | JSON, SARIF, Markdown and terminal output, exit codes | `gen-tests` |
-| `slopguard.toml`, suppressions, baselines | `fix` |
+| `slopaudit.toml`, suppressions, baselines | `fix` |
 | `regress`, `bench`, `rules`, `explain`, `init` | The Docker sandbox backend |
-| `slopguard.scan()` and `slopguard.scan_source()` | Rules marked `experimental` |
+| `slopaudit.scan()` and `slopaudit.scan_source()` | Rules marked `experimental` |
 | The GitHub Action and the pre-commit hook | |
 
 ## Consequences

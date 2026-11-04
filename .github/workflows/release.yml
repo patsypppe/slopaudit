@@ -28,12 +28,12 @@ jobs:
         run: |
           python -m venv /tmp/clean
           /tmp/clean/bin/pip install dist/*.whl
-          /tmp/clean/bin/slopguard --version
-          /tmp/clean/bin/slopguard scan examples/vulnerable_agent --no-network --fail-on none
+          /tmp/clean/bin/slopaudit --version
+          /tmp/clean/bin/slopaudit scan examples/vulnerable_agent --no-network --fail-on none
       - name: Tag must match the package version
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          version="$(/tmp/clean/bin/python -c 'import slopguard; print(slopguard.__version__)')"
+          version="$(/tmp/clean/bin/python -c 'import slopaudit; print(slopaudit.__version__)')"
           test "v${version}" = "${GITHUB_REF_NAME}" || { echo "tag ${GITHUB_REF_NAME} does not match version ${version}"; exit 1; }
       - uses: actions/upload-artifact@v7
         with:

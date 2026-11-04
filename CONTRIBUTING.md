@@ -1,19 +1,19 @@
-# Contributing to slopguard
+# Contributing to slopaudit
 
-Thank you for helping. slopguard gets better mostly from **real examples**: code it flagged wrongly, code
+Thank you for helping. slopaudit gets better mostly from **real examples**: code it flagged wrongly, code
 it missed, and rules for new ways assistants go wrong. You do not need to write code to help.
 
 By taking part you agree to follow the [code of conduct](CODE_OF_CONDUCT.md).
 
 ## Ways to help, easiest first
 
-The [contributor roadmap](https://github.com/patsypppe/slopguard/issues/85) lists every open issue by area
+The [contributor roadmap](https://github.com/patsypppe/slopaudit/issues/85) lists every open issue by area
 and difficulty. Good first issues are labelled
-[`good first issue`](https://github.com/patsypppe/slopguard/labels/good%20first%20issue).
+[`good first issue`](https://github.com/patsypppe/slopaudit/labels/good%20first%20issue).
 
 
 1. **Report a false positive or a miss** with the smallest code that shows it. Use the
-   [issue forms](https://github.com/patsypppe/slopguard/issues/new/choose). Each confirmed report becomes a
+   [issue forms](https://github.com/patsypppe/slopaudit/issues/new/choose). Each confirmed report becomes a
    regression test.
 2. **Improve the docs**: a confusing sentence, a missing example, a typo. Edit the file and open a pull request.
 3. **Try it on your own project** and tell us what the noise level was like.
@@ -23,14 +23,14 @@ and difficulty. Good first issues are labelled
 
 ## Set up
 
-**Fastest:** open the repository in [GitHub Codespaces](https://codespaces.new/patsypppe/slopguard) or in
+**Fastest:** open the repository in [GitHub Codespaces](https://codespaces.new/patsypppe/slopaudit) or in
 VS Code with the Dev Containers extension. The `.devcontainer` installs everything; then run `make check`.
 
 **On your machine:** you need Python 3.10 or newer and git.
 
 ```bash
-git clone https://github.com/patsypppe/slopguard
-cd slopguard
+git clone https://github.com/patsypppe/slopaudit
+cd slopaudit
 python3 -m venv .venv && . .venv/bin/activate
 make install        # pip install -e ".[dev]"
 make check          # lint, tests, scan itself, benchmark gate: what CI runs
@@ -54,7 +54,7 @@ CI runs on Python 3.10 to 3.13 and must be green to merge.
 
 ## The clean-room rule
 
-slopguard is MIT-licensed and must stay free of code from copyleft tools. Before writing a rule that
+slopaudit is MIT-licensed and must stay free of code from copyleft tools. Before writing a rule that
 resembles one in another scanner, read [docs/clean-room.md](docs/clean-room.md). In short: use public
 documentation for ideas, write your own implementation, and do not read another tool's source while writing
 the matching rule. Other tools may be *run* for benchmarking, never imported, vendored or copied. A pull
@@ -76,9 +76,9 @@ request that looks derived from another tool's code will be declined.
 ## Project layout
 
 ```text
-src/slopguard/
+src/slopaudit/
   cli.py            commands and options          api.py        the supported Python API
-  engine.py         discovery, running, baselines  config.py     slopguard.toml
+  engine.py         discovery, running, baselines  config.py     slopaudit.toml
   taint.py          the flow tracker               rules/        one module per rule family
   spec.py           requirement checking           drift.py      repo-convention mining
   regress.py        test-regression checks         repair.py     verify-and-repair loop
@@ -97,5 +97,5 @@ If you would like to help maintain, say so in an issue after a few merged contri
 
 ## Security and conduct
 
-Security problems in slopguard itself: [SECURITY.md](SECURITY.md). Conduct concerns:
+Security problems in slopaudit itself: [SECURITY.md](SECURITY.md). Conduct concerns:
 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

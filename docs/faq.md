@@ -3,13 +3,13 @@
 ## Questions
 
 **Is this a replacement for Bandit, Semgrep or CodeQL?**
-No. They are broader and mature. slopguard targets problems specific to AI-written code and
+No. They are broader and mature. slopaudit targets problems specific to AI-written code and
 LLM-powered apps, which general scanners mostly do not model: model output reaching `eval`, prompt
 injection paths, over-permissive agent tools, invented packages, stubs, and unmet requirements.
 Run it alongside them. [The benchmark](benchmarks.md) shows what each catches, with its caveats.
 
 **Does a clean scan mean my code is safe?**
-No. It means slopguard's rules found nothing. The flow rules only follow values inside one function.
+No. It means slopaudit's rules found nothing. The flow rules only follow values inside one function.
 See [what it cannot see](how-it-works.md#what-it-cannot-see).
 
 **Does it need an API key or the internet?**
@@ -26,9 +26,9 @@ Python-specific flow analysis and its measured accuracy, and a thin second langu
 
 **Which operating systems work?**
 Scanning is plain Python and should run anywhere Python 3.10+ does, but CI only runs on Linux. Installing
-from TestPyPI and running `slopguard --version` and `slopguard rules` has been confirmed by the maintainer on
+from TestPyPI and running `slopaudit --version` and `slopaudit rules` has been confirmed by the maintainer on
 macOS (Python 3.15). A full scan on macOS, and anything on Windows, is untested; please report what you find
-([#6](https://github.com/patsypppe/slopguard/issues/6) tracks adding both to CI). The sandbox backends need
+([#6](https://github.com/patsypppe/slopaudit/issues/6) tracks adding both to CI). The sandbox backends need
 Linux (Docker also works on macOS).
 
 **How fast is it?**
@@ -47,20 +47,20 @@ did not write.
 ## Troubleshooting
 
 **`0 files scanned` / "no supported files found".**
-You pointed slopguard at a folder with no Python (or `.env`/config) files, or everything is excluded.
+You pointed slopaudit at a folder with no Python (or `.env`/config) files, or everything is excluded.
 JavaScript and TypeScript are not supported. Check `[scan] exclude` and the always-skipped folders in
 [configuration](configuration.md).
 
 **A rule flags an import that does exist (HAL-01).**
 The import name differs from the PyPI name, or the package is private. Private: add the import name to
 `[packages] private`. Public with a different name: please
-[report it](https://github.com/patsypppe/slopguard/issues/new/choose) so it can be added to the alias table.
+[report it](https://github.com/patsypppe/slopaudit/issues/new/choose) so it can be added to the alias table.
 As a workaround, suppress the line.
 
 **HAL-04 says a package is undeclared, but it is installed.**
 It is probably installed as a dependency of something you did declare. `pydantic_core`, for example, comes
 with `pydantic`. Importing it directly works today and breaks the day `pydantic` stops depending on it, so
-the fix is to declare it. slopguard reads, in the file's own folder and every folder above it:
+the fix is to declare it. slopaudit reads, in the file's own folder and every folder above it:
 `requirements*.txt`, `requirements/*.txt`, `pyproject.toml` (`[project]` dependencies and extras,
 `[dependency-groups]`, Poetry, uv and PDM dev dependencies, Hatch environments), `setup.cfg` and `Pipfile`.
 A subproject or fixture folder can declare its own. Files that only hold tool settings do not count.
@@ -73,12 +73,12 @@ deserves a look. Suppress it on the line if it is truly fake.
 Lookups time out after a few seconds and an unknown answer is never reported as a finding, so an
 offline run is quiet, not wrong. Use `--no-network` for speed.
 
-**`slopguard: command not found`.**
+**`slopaudit: command not found`.**
 With `pipx`, run `pipx ensurepath` and restart the shell. In a virtual environment, activate it.
 
 **Exit code 2.**
 A usage or configuration error: an unknown rule or module, a bad format, a missing path or spec, or an
-invalid `slopguard.toml`. The message says which.
+invalid `slopaudit.toml`. The message says which.
 
 **`no LLM provider configured`.**
 Add an `[llm]` section with `provider` and `model`, and export the provider's key. See
@@ -93,5 +93,5 @@ The workflow needs `permissions: security-events: write`, and private repositori
 Security. Set `upload-sarif: "false"` otherwise.
 
 **A finding is wrong.**
-Please [open a "false positive" issue](https://github.com/patsypppe/slopguard/issues/new/choose) with the
+Please [open a "false positive" issue](https://github.com/patsypppe/slopaudit/issues/new/choose) with the
 smallest code that shows it. Every confirmed false positive becomes a regression test.

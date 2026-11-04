@@ -12,9 +12,9 @@ import ast
 import re
 from dataclasses import dataclass, field
 
-from slopguard.llm import LLMError, Provider, extract_json
-from slopguard.models import Finding, Severity, finding_from_meta
-from slopguard.rules.incomplete import HollowFunction, _is_docstring
+from slopaudit.llm import LLMError, Provider, extract_json
+from slopaudit.models import Finding, Severity, finding_from_meta
+from slopaudit.rules.incomplete import HollowFunction, _is_docstring
 
 BULLET = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s+(?:\[[ xX]\]\s+)?(.*\S)\s*$")
 MODAL = re.compile(r"\b(must|shall|should|needs? to|required to|has to)\b", re.IGNORECASE)
@@ -327,7 +327,7 @@ def verify_spec(
 
 
 def verdict_findings(spec_path: str, verdicts: list[Verdict]) -> list[Finding]:
-    from slopguard.rules import get_rule
+    from slopaudit.rules import get_rule
 
     meta = get_rule("SPC-02").meta  # type: ignore[union-attr]
     findings = []

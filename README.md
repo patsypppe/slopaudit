@@ -1,12 +1,12 @@
-# slopguard
+# slopaudit
 
-[![PyPI](https://img.shields.io/pypi/v/slopguard.svg)](https://pypi.org/project/slopguard/)
-[![Python versions](https://img.shields.io/pypi/pyversions/slopguard.svg)](https://pypi.org/project/slopguard/)
-[![CI](https://github.com/patsypppe/slopguard/actions/workflows/ci.yml/badge.svg)](https://github.com/patsypppe/slopguard/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/slopaudit.svg)](https://pypi.org/project/slopaudit/)
+[![Python versions](https://img.shields.io/pypi/pyversions/slopaudit.svg)](https://pypi.org/project/slopaudit/)
+[![CI](https://github.com/patsypppe/slopaudit/actions/workflows/ci.yml/badge.svg)](https://github.com/patsypppe/slopaudit/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Good first issues](https://img.shields.io/github/issues/patsypppe/slopguard/good%20first%20issue.svg?label=good%20first%20issues)](https://github.com/patsypppe/slopguard/labels/good%20first%20issue)
+[![Good first issues](https://img.shields.io/github/issues/patsypppe/slopaudit/good%20first%20issue.svg?label=good%20first%20issues)](https://github.com/patsypppe/slopaudit/labels/good%20first%20issue)
 
-**Check AI-written code before you trust it.** slopguard is an open-source command-line tool for Python
+**Check AI-written code before you trust it.** slopaudit is an open-source command-line tool for Python
 that finds the problems AI assistants and LLM-powered apps tend to introduce, and that general scanners
 were not built to look for.
 
@@ -24,21 +24,21 @@ It runs on your machine, never executes the code it scans, needs no account or A
 You need Python 3.10 or newer. Pick one:
 
 ```bash
-pipx install slopguard             # recommended: an isolated command-line tool
-uv tool install slopguard          # same idea, if you use uv
-python3 -m pip install slopguard   # inside a virtual environment
+pipx install slopaudit             # recommended: an isolated command-line tool
+uv tool install slopaudit          # same idea, if you use uv
+python3 -m pip install slopaudit   # inside a virtual environment
 ```
 
 Then check it works:
 
 ```bash
-slopguard --version
+slopaudit --version
 ```
 
 **Just try it, without installing anything:**
 
 ```bash
-pipx run slopguard scan .          # or: uvx slopguard scan .
+pipx run slopaudit scan .          # or: uvx slopaudit scan .
 ```
 
 <details>
@@ -48,11 +48,11 @@ pipx run slopguard scan .          # or: uvx slopguard scan .
 | --- | --- |
 | Get pipx on macOS | `brew install pipx && pipx ensurepath` |
 | Get pipx elsewhere | `python3 -m pip install --user pipx && python3 -m pipx ensurepath` |
-| Upgrade | `pipx upgrade slopguard`, or `python3 -m pip install --upgrade slopguard` |
-| Uninstall | `pipx uninstall slopguard`, or `python3 -m pip uninstall slopguard` |
-| Install a specific version | `pipx install slopguard==1.0.0` |
-| Install the latest unreleased code | `pipx install git+https://github.com/patsypppe/slopguard` |
-| Hack on it | `git clone https://github.com/patsypppe/slopguard && cd slopguard && make install` (or open it in [Codespaces](https://codespaces.new/patsypppe/slopguard)) |
+| Upgrade | `pipx upgrade slopaudit`, or `python3 -m pip install --upgrade slopaudit` |
+| Uninstall | `pipx uninstall slopaudit`, or `python3 -m pip uninstall slopaudit` |
+| Install a specific version | `pipx install slopaudit==1.0.0` |
+| Install the latest unreleased code | `pipx install git+https://github.com/patsypppe/slopaudit` |
+| Hack on it | `git clone https://github.com/patsypppe/slopaudit && cd slopaudit && make install` (or open it in [Codespaces](https://codespaces.new/patsypppe/slopaudit)) |
 
 On macOS and most Linux systems the command is `python3`; `python: command not found` only means that.
 On Windows use `py` instead of `python3`.
@@ -62,8 +62,8 @@ On Windows use `py` instead of `python3`.
 **In CI**, no install step is needed. Use the GitHub Action:
 
 ```yaml
-# .github/workflows/slopguard.yml
-name: slopguard
+# .github/workflows/slopaudit.yml
+name: slopaudit
 on: [pull_request]
 permissions: { contents: read, security-events: write }
 jobs:
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: patsypppe/slopguard@v1.0.0
+      - uses: patsypppe/slopaudit@v1.0.0
 ```
 
 **Before every commit**, with [pre-commit](https://pre-commit.com):
@@ -79,16 +79,16 @@ jobs:
 ```yaml
 # .pre-commit-config.yaml
 repos:
-  - repo: https://github.com/patsypppe/slopguard
+  - repo: https://github.com/patsypppe/slopaudit
     rev: v1.0.0
     hooks:
-      - id: slopguard
+      - id: slopaudit
 ```
 
 ## See it work
 
 ```console
-$ slopguard scan examples/vulnerable_agent
+$ slopaudit scan examples/vulnerable_agent
 vulnerable_agent/app.py
   16   HIGH   LLM-08  Tool `run_command` passes a model-chosen argument to subprocess.run() (shell)
         ↳ line 14: tool argument `command` is chosen by the model
@@ -108,27 +108,27 @@ vulnerable_agent/app.py
 ```
 
 Every flow finding shows the path the data took, so you can judge it in seconds. Each finding also has a
-`fix:` line and a longer explanation: `slopguard explain LLM-02`. No model is involved: slopguard reads the
+`fix:` line and a longer explanation: `slopaudit explain LLM-02`. No model is involved: slopaudit reads the
 code's structure and follows values from where they come from to where they are used
 ([how it works](docs/how-it-works.md)).
 
 ## Quickstart
 
 ```bash
-slopguard scan .                              # scan the current folder
-slopguard scan . --no-network                 # skip the PyPI package check
-slopguard scan --staged                       # only what you are about to commit
-slopguard scan . --format sarif -o out.sarif  # for GitHub code scanning
-slopguard scan src --spec SPEC.md             # check the code against a requirements file
-slopguard explain LLM-02                      # why a rule exists, and how to fix it
+slopaudit scan .                              # scan the current folder
+slopaudit scan . --no-network                 # skip the PyPI package check
+slopaudit scan --staged                       # only what you are about to commit
+slopaudit scan . --format sarif -o out.sarif  # for GitHub code scanning
+slopaudit scan src --spec SPEC.md             # check the code against a requirements file
+slopaudit explain LLM-02                      # why a rule exists, and how to fix it
 ```
 
 **From Python**, for example to check an assistant's answer before saving it:
 
 ```python
-import slopguard
+import slopaudit
 
-blockers = [f for f in slopguard.scan_source(answer) if f.severity >= slopguard.Severity.HIGH]
+blockers = [f for f in slopaudit.scan_source(answer) if f.severity >= slopaudit.Severity.HIGH]
 ```
 
 New to it? The [getting-started guide](docs/getting-started.md) takes five minutes, and has a
@@ -154,7 +154,7 @@ and [`fix`](docs/beyond-scanning.md#repair-loop) (a dry run unless you pass `--a
 
 Three checks, each reproducible from this repository. None is a guarantee; the caveats matter.
 
-**1. Labelled corpus** (`slopguard bench`, 34 files). Every rule scores 1.00 precision; recall is 0.91,
+**1. Labelled corpus** (`slopaudit bench`, 34 files). Every rule scores 1.00 precision; recall is 0.91,
 with two labelled misses (a value that crosses a function boundary, or goes through `self`). The corpus is
 small and was used to tune the rules, so treat it as a regression gate.
 
@@ -163,15 +163,15 @@ severity or higher, run as external programs.
 
 | Tool | LLM-app security (15) | Secrets (1) | Incomplete code (4) | Hallucinated packages (1) | False alarms on 13 safe files |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| slopguard | 12 | 1 | 3 | 1 | 0 |
+| slopaudit | 12 | 1 | 3 | 1 | 0 |
 | Bandit | 6 | 0 | 0 | 0 | 1 |
 | Semgrep, public python rules | 8 | 0 | 2 | 0 | 2 |
 | Semgrep, public ai rules | 12 | 0 | 0 | 0 | 6 |
 | vibechck | 0 | 0 | 2 | 0 | 1 |
 
-The corpus targets what slopguard was built for, so it flatters slopguard. Bandit and Semgrep are broader
+The corpus targets what slopaudit was built for, so it flatters slopaudit. Bandit and Semgrep are broader
 tools not designed for these cases, and Semgrep's `ai` rules are SDK best-practice lints. Semgrep also
-catches the two cross-function cases slopguard misses, because it flags any dynamic `eval`.
+catches the two cross-function cases slopaudit misses, because it flags any dynamic `eval`.
 
 **3. Mature packages as a false-positive control** ([report](docs/real-world-check.md)): 1.5 million lines
 across twelve well-reviewed packages, including the OpenAI, Anthropic, LangChain and LiteLLM SDKs.
@@ -191,14 +191,14 @@ This measures noise only: those packages are not AI-generated.
   ([what 1.0 promises](docs/decisions/0002-what-1-0-promises.md)).
 - **Python only.** JavaScript and TypeScript files are skipped, and the scan says so when it finds nothing to read.
 - **Linux CI only.** Installing and running on macOS has been checked by hand; Windows is untested
-  ([#6](https://github.com/patsypppe/slopguard/issues/6)).
+  ([#6](https://github.com/patsypppe/slopaudit/issues/6)).
 
 ## Documentation
 
 | | |
 | --- | --- |
 | [Getting started](docs/getting-started.md) | Install, first scan, reading output |
-| [Configuration](docs/configuration.md) | Every `slopguard.toml` setting |
+| [Configuration](docs/configuration.md) | Every `slopaudit.toml` setting |
 | [CI integration](docs/ci-integration.md) | GitHub Action, pre-commit, GitLab |
 | [Suppressing findings](docs/suppressing-findings.md) | Comments, baselines, ignores |
 | [Beyond scanning](docs/beyond-scanning.md) | Spec checks, generated tests, drift, regression, repair |
@@ -214,25 +214,25 @@ Contributions are welcome: rules, false-positive reports, docs and tests. The mo
 do is **report a false positive or a miss with the smallest code that shows it**; every confirmed report
 becomes a regression test.
 
-**Looking for something to work on?** The [contributor roadmap](https://github.com/patsypppe/slopguard/issues/85)
+**Looking for something to work on?** The [contributor roadmap](https://github.com/patsypppe/slopaudit/issues/85)
 lists every open issue by area and difficulty. Each one says why it matters, which files to change, and when
 it is done:
 
 | Start here | |
 | --- | --- |
-| [Good first issues](https://github.com/patsypppe/slopguard/labels/good%20first%20issue) | Small and well-defined: aliases, output formats, docs, test samples |
-| [Help wanted](https://github.com/patsypppe/slopguard/labels/help%20wanted) | New rules and integrations |
-| [Advanced](https://github.com/patsypppe/slopguard/labels/advanced) | The flow tracker and bigger design questions; discuss before coding |
+| [Good first issues](https://github.com/patsypppe/slopaudit/labels/good%20first%20issue) | Small and well-defined: aliases, output formats, docs, test samples |
+| [Help wanted](https://github.com/patsypppe/slopaudit/labels/help%20wanted) | New rules and integrations |
+| [Advanced](https://github.com/patsypppe/slopaudit/labels/advanced) | The flow tracker and bigger design questions; discuss before coding |
 
 Comment on an issue before you start so nobody duplicates work. Setup takes one click in
-[Codespaces](https://codespaces.new/patsypppe/slopguard), or `make install` locally. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and
+[Codespaces](https://codespaces.new/patsypppe/slopaudit), or `make install` locally. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and
 [writing a rule](docs/writing-rules.md), and please follow the [code of conduct](CODE_OF_CONDUCT.md).
 Questions go in [Discussions or issues](SUPPORT.md); security problems in
 [SECURITY.md](SECURITY.md).
 
 ## License
 
-[MIT](LICENSE). slopguard is independent work: it takes no code, rules, messages or structure from other
+[MIT](LICENSE). slopaudit is independent work: it takes no code, rules, messages or structure from other
 tools. The [clean-room record](docs/clean-room.md) explains how, and why other scanners are only ever *run*,
 never copied. Thanks to the authors of Bandit, Semgrep and vibechck for the prior art that made the
 comparison possible.

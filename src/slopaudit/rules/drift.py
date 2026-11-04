@@ -10,8 +10,8 @@ from __future__ import annotations
 import ast
 from collections.abc import Iterable
 
-from slopguard.context import FileContext
-from slopguard.drift import (
+from slopaudit.context import FileContext
+from slopaudit.drift import (
     JOBS,
     PASCAL,
     SNAKE,
@@ -21,8 +21,8 @@ from slopguard.drift import (
     print_calls,
     public_functions,
 )
-from slopguard.models import Finding, Rule, RuleMeta, Severity
-from slopguard.rules import register
+from slopaudit.models import Finding, Rule, RuleMeta, Severity
+from slopaudit.rules import register
 
 DOMINANT = 0.8
 MIN_SAMPLE = 10

@@ -10,7 +10,7 @@ from enum import IntEnum
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from slopguard.context import FileContext
+    from slopaudit.context import FileContext
 
 
 class Severity(IntEnum):

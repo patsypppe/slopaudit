@@ -1,4 +1,4 @@
-"""An intentionally vulnerable demo for `slopguard scan examples/vulnerable_agent`.
+"""An intentionally vulnerable demo for `slopaudit scan examples/vulnerable_agent`.
 
 Every problem here is something an AI assistant can plausibly produce. Never deploy this file.
 The repository's own scan skips `examples/`.
