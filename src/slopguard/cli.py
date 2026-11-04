@@ -26,7 +26,7 @@ from slopguard.llm import LLMError, get_provider
 from slopguard.models import Rule, Severity
 from slopguard.regress import RegressionError, regress
 from slopguard.repair import read_sources, repair
-from slopguard.reporters import render_terminal, to_json, to_markdown, to_sarif
+from slopguard.reporters import render_terminal, to_github, to_json, to_markdown, to_sarif
 from slopguard.rules import all_rules, get_rule
 from slopguard.sandbox import SandboxError, run_tests
 from slopguard.spec import parse_spec, verdict_findings, verify_spec
@@ -38,7 +38,7 @@ app = typer.Typer(
     add_completion=False,
 )
 
-FORMATS = ("terminal", "json", "markdown", "sarif")
+FORMATS = ("terminal", "json", "markdown", "sarif", "github")
 EXIT_OK, EXIT_FINDINGS, EXIT_USAGE, EXIT_INTERNAL = 0, 1, 2, 3
 
 
@@ -72,7 +72,7 @@ def _select_rules(config: Config, modules: list[str], rule_ids: list[str]) -> li
 @app.command()
 def scan(
     paths: list[Path] | None = typer.Argument(None, help="Files or folders to scan."),
-    fmt: str = typer.Option("terminal", "--format", "-f", help="terminal, json, markdown or sarif."),
+    fmt: str = typer.Option("terminal", "--format", "-f", help="terminal, json, markdown, sarif or github."),
     output: Path | None = typer.Option(None, "--output", "-o", help="Write the report here."),
     severity: str | None = typer.Option(None, "--severity", help="Minimum severity to report."),
     fail_on: str | None = typer.Option(None, "--fail-on", help="Exit 1 at this severity or above, or 'none' (default: high)."),
@@ -211,6 +211,8 @@ def _emit(fmt, output, findings, rules, files_scanned, errors) -> None:
         text = to_markdown(findings, files_scanned)
     elif fmt == "sarif":
         text = json.dumps(to_sarif(findings, rules), indent=2)
+    elif fmt == "github":
+        text = to_github(findings)
     else:
         with Path(output).open("w") as handle:
             console = Console(file=handle, width=100, color_system=None)

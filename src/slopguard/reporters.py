@@ -1,4 +1,4 @@
-"""Output formats: terminal, JSON, Markdown and SARIF 2.1.0."""
+"""Output formats: terminal, JSON, Markdown, SARIF 2.1.0 and GitHub workflow commands."""
 
 from __future__ import annotations
 
@@ -96,6 +96,43 @@ def to_markdown(findings: list[Finding], files_scanned: int) -> str:
         for step in finding.trace:
             lines.append(f"  - {step}")
     return "\n".join(lines) + "\n"
+
+
+GITHUB_LEVEL = {
+    Severity.CRITICAL: "error",
+    Severity.HIGH: "error",
+    Severity.MEDIUM: "warning",
+    Severity.LOW: "notice",
+    Severity.INFO: "notice",
+}
+
+
+def _escape_workflow_command(value: str) -> str:
+    """Escape a value for a GitHub workflow command (see workflow commands docs)."""
+    return value.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+
+
+def to_github(findings: list[Finding]) -> str:
+    """Render findings as GitHub workflow commands, one annotation per finding.
+
+    ``::error file={path},line={line},endLine={endLine},title=...::message``
+    is what GitHub Actions turns into an inline PR annotation; critical/high
+    map to ``error``, medium to ``warning``, low/info to ``notice``. No
+    findings produces no output, so a clean scan adds no annotations.
+    """
+    lines = []
+    for finding in findings:
+        message = f"{finding.severity.label} {finding.rule_id}: {finding.message}"
+        if finding.fix:
+            message += f" Fix: {finding.fix}"
+        lines.append(
+            f"::{GITHUB_LEVEL[finding.severity]} "
+            f"file={_escape_workflow_command(finding.path)},"
+            f"line={finding.line},endLine={max(finding.line, finding.end_line)},"
+            f"title={_escape_workflow_command('slopguard ' + finding.rule_id)}"
+            f"::{_escape_workflow_command(message)}"
+        )
+    return "\n".join(lines) + ("\n" if lines else "")
 
 
 def to_sarif(findings: list[Finding], rules: list[Rule]) -> dict:
