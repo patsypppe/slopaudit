@@ -25,7 +25,7 @@ slopguard scan [OPTIONS] [PATHS...]
 
 | Option | Description | Default |
 | --- | --- | --- |
-| `--format`, `-f` | terminal, json, markdown or sarif. | `terminal` |
+| `--format`, `-f` | terminal, json, markdown, sarif or github. | `terminal` |
 | `--output`, `-o` | Write the report here. |  |
 | `--severity` | Minimum severity to report. |  |
 | `--fail-on` | Exit 1 at this severity or above, or 'none' (default: high). |  |
@@ -54,7 +54,7 @@ slopguard regress [OPTIONS]
 | `--base` | Git ref to compare against. | `HEAD` |
 | `--run-tests` | Also run the suite at the base and now. | off |
 | `--timeout` | Seconds allowed per test run. | `300` |
-| `--format`, `-f` | terminal, json, markdown or sarif. | `terminal` |
+| `--format`, `-f` | terminal, json, markdown, sarif or github. | `terminal` |
 | `--config` |  |  |
 
 ## slopguard gen-tests

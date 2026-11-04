@@ -27,6 +27,19 @@ The action installs slopguard from the action's own checkout (so the action vers
 version always match), scans, uploads SARIF, writes a summary to the job page, and fails the job at
 `fail-on` or above. Pin `@main` to a tag such as `@v1.0.0` once releases exist.
 
+### Inline PR annotations without SARIF
+
+If you do not want (or cannot use) the SARIF upload, run the scan with
+`--format github` instead: each finding is printed as a GitHub workflow
+command (`::error` / `::warning` / `::notice` with file, line and
+endLine), which GitHub turns into an inline annotation on the pull
+request. A clean scan prints nothing, so it adds no annotations.
+
+```yaml
+      - run: pip install slopguard
+      - run: slopguard scan . --no-network --format github --fail-on high
+```
+
 | Input | Default | Meaning |
 | --- | --- | --- |
 | `path` | `.` | Files or folders to scan (space separated) |
