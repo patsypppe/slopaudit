@@ -72,7 +72,9 @@ version does not fail with "File already exists".
 
 ## Before dropping the `rc` suffix
 
-Do not publish `1.0.0` until these are true. They are listed in the changelog as known limitations.
+1.0.0 shipped with the first two items open; the model-assisted commands and the Docker backend were
+marked experimental instead ([decision 0002](decisions/0002-what-1-0-promises.md)). Use this list to move
+them out of experimental.
 
 - [ ] `scan --spec --llm`, `gen-tests` and `fix` have been run against a live provider on a real project.
 - [ ] The Docker sandbox backend has been run once on a machine with a Docker daemon.

@@ -8,8 +8,8 @@ Exit codes for `scan`, `regress`, `fix` and `bench`: `0` nothing at or above the
 | --- | --- |
 | [`slopguard scan`](#slopguard-scan) | Scan code for LLM-app vulnerabilities, hallucinated imports and unfinished code. |
 | [`slopguard regress`](#slopguard-regress) | Find deleted, skipped or weakened tests, and tests that passed before and now fail. |
-| [`slopguard gen-tests`](#slopguard-gen-tests) | Ask the configured model for pytest tests that check each requirement. |
-| [`slopguard fix`](#slopguard-fix) | Scan, ask the configured model for fixes, re-scan, and keep only real improvements. |
+| [`slopguard gen-tests`](#slopguard-gen-tests) | Experimental: ask the configured model for pytest tests that check each requirement. |
+| [`slopguard fix`](#slopguard-fix) | Experimental: ask the configured model for fixes, re-scan, keep only real improvements. |
 | [`slopguard rules`](#slopguard-rules) | List every rule with its severity and module. |
 | [`slopguard explain`](#slopguard-explain) | Explain a rule: why it matters and how to fix it. |
 | [`slopguard init`](#slopguard-init) | Write a starter slopguard.toml in the current folder. |
@@ -39,7 +39,7 @@ slopguard scan [OPTIONS] [PATHS...]
 | `--no-network` | Skip PyPI lookups. | off |
 | `--config` | Path to a slopguard.toml. |  |
 | `--spec` | Check the code against this spec file. |  |
-| `--llm` | Let the configured model judge --spec requirements. | off |
+| `--llm` | Experimental: let the configured model judge --spec requirements. | off |
 
 ## slopguard regress
 
@@ -59,7 +59,7 @@ slopguard regress [OPTIONS]
 
 ## slopguard gen-tests
 
-Ask the configured model for pytest tests that check each requirement.
+Experimental: ask the configured model for pytest tests that check each requirement.
 
 ```text
 slopguard gen-tests [OPTIONS] [PATHS...]
@@ -74,7 +74,7 @@ slopguard gen-tests [OPTIONS] [PATHS...]
 
 ## slopguard fix
 
-Scan, ask the configured model for fixes, re-scan, and keep only real improvements.
+Experimental: ask the configured model for fixes, re-scan, keep only real improvements.
 
 By default this only prints a diff. Use --apply to write the files.
 

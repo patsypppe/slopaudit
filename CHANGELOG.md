@@ -3,16 +3,25 @@
 All notable changes are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/),
 and versions follow [Semantic Versioning](https://semver.org/).
 
-## Unreleased
+## [1.0.0] - 2026-11-04
 
-### Fixed
+First stable release. **What 1.0 promises:** the scanner (`scan`, every rule not marked experimental, the
+output formats, configuration, baselines and suppressions), `regress`, `bench`, the Python API, the GitHub
+Action and the pre-commit hook. Breaking changes to these wait for 2.0.
+
+**Experimental, outside that promise:** `scan --spec --llm`, `gen-tests`, `fix` and the Docker sandbox
+backend. They are tested against local stand-ins, not live services, and may change in a minor release.
+Rules marked `experimental` in `slopguard rules` may also change. See
+[decision 0002](docs/decisions/0002-what-1-0-promises.md).
+
+### Fixed since 1.0.0rc2
 
 - HAL-04 now reads uv and PDM dev dependencies, Hatch environments, `setup.cfg` and `Pipfile`, so packages
   declared there are no longer reported as undeclared.
 - A `pyproject.toml` or `setup.cfg` that only holds tool settings (such as `[tool.ruff]` or `[flake8]`) no
   longer counts as a manifest that declares nothing, which made HAL-04 flag every third-party import.
 
-## [1.0.0rc2] - on TestPyPI
+## [1.0.0rc2] - TestPyPI only
 
 Fixes from running slopguard on a real project (an agent with fixture packages and a Postgres store).
 
@@ -27,7 +36,7 @@ Fixes from running slopguard on a real project (an agent with fixture packages a
 - SEC-01 reports credentials named like test data (`FAKE_KEY`, `TEST_API_KEY`) as low severity, so they no
   longer fail builds. Normal names stay critical, and "latest" is not mistaken for "test".
 
-## [1.0.0rc1] - published to TestPyPI only
+## [1.0.0rc1] - TestPyPI only
 
 First release candidate. Not yet published to PyPI.
 

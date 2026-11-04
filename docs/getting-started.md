@@ -5,22 +5,23 @@ and `regress`).
 
 ## 1. Install
 
-slopguard is not on PyPI yet (see [releasing](releasing.md)). Until it is, install from a clone:
-
 ```bash
-git clone https://github.com/patsypppe/slopguard
-cd slopguard
-python3 -m venv .venv && . .venv/bin/activate
-pip install -e .
+pipx install slopguard             # recommended; or: uv tool install slopguard
 slopguard --version
 ```
 
-**Platform notes.** On macOS and most Linux systems the command is `python3`, not `python`
-(`python: command not found` just means that). On Windows use `py -m venv .venv` and
-`.venv\Scripts\activate`. On macOS, `brew install pipx` gives you `pipx`.
+No pipx? `brew install pipx` on macOS, or `python3 -m pip install --user pipx` elsewhere, then
+`pipx ensurepath` and open a new terminal. You can also install into a virtual environment with
+`python3 -m pip install slopguard`, or try it once without installing: `pipx run slopguard --version`.
 
-Once published, use `pipx install --pre slopguard` (or `pip install --pre slopguard` inside a
-virtual environment). `pipx` keeps the tool out of your project's dependencies.
+**Platform notes.** On macOS and most Linux systems the command is `python3`, not `python`
+(`python: command not found` just means that). On Windows use `py` instead of `python3`.
+
+The demo below lives in the repository, so clone it to follow along:
+
+```bash
+git clone https://github.com/patsypppe/slopguard && cd slopguard
+```
 
 ## 2. Scan the demo
 

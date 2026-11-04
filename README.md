@@ -1,13 +1,14 @@
 # slopguard
 
+[![PyPI](https://img.shields.io/pypi/v/slopguard.svg)](https://pypi.org/project/slopguard/)
+[![Python versions](https://img.shields.io/pypi/pyversions/slopguard.svg)](https://pypi.org/project/slopguard/)
 [![CI](https://github.com/patsypppe/slopguard/actions/workflows/ci.yml/badge.svg)](https://github.com/patsypppe/slopguard/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](docs/getting-started.md)
-[![Status: release candidate](https://img.shields.io/badge/status-1.0.0rc1-orange.svg)](CHANGELOG.md)
+[![Good first issues](https://img.shields.io/github/issues/patsypppe/slopguard/good%20first%20issue.svg?label=good%20first%20issues)](https://github.com/patsypppe/slopguard/labels/good%20first%20issue)
 
-**Check AI-written code before you trust it.** slopguard is an open-source Python command-line tool
-that finds the problems assistants and LLM-powered apps tend to introduce, and that general
-scanners were not built to look for.
+**Check AI-written code before you trust it.** slopguard is an open-source command-line tool for Python
+that finds the problems AI assistants and LLM-powered apps tend to introduce, and that general scanners
+were not built to look for.
 
 - **Is it safe?** Does model output reach `eval`, a shell or a SQL query? Does untrusted input end up
   in a system prompt? Does an agent tool hand the model a shell?
@@ -16,11 +17,73 @@ scanners were not built to look for.
 - **Is it what you asked for?** Does the code meet each requirement in your spec, and did the change
   delete or weaken tests to get there?
 
-It runs locally, never executes the code it scans, needs no account, and has no telemetry.
+It runs on your machine, never executes the code it scans, needs no account or API key, and has no telemetry.
 
-> **Status: release candidate (1.0.0rc1), not yet on PyPI.** Install from a clone for now. The model-assisted
-> commands have not yet been run against live providers; see [known limitations](#honest-limits).
-> Python only ([why](docs/decisions/0001-javascript-typescript.md)).
+## Install
+
+You need Python 3.10 or newer. Pick one:
+
+```bash
+pipx install slopguard             # recommended: an isolated command-line tool
+uv tool install slopguard          # same idea, if you use uv
+python3 -m pip install slopguard   # inside a virtual environment
+```
+
+Then check it works:
+
+```bash
+slopguard --version
+```
+
+**Just try it, without installing anything:**
+
+```bash
+pipx run slopguard scan .          # or: uvx slopguard scan .
+```
+
+<details>
+<summary>Don't have pipx, upgrading, uninstalling, or installing from source</summary>
+
+| I want to | Run |
+| --- | --- |
+| Get pipx on macOS | `brew install pipx && pipx ensurepath` |
+| Get pipx elsewhere | `python3 -m pip install --user pipx && python3 -m pipx ensurepath` |
+| Upgrade | `pipx upgrade slopguard`, or `python3 -m pip install --upgrade slopguard` |
+| Uninstall | `pipx uninstall slopguard`, or `python3 -m pip uninstall slopguard` |
+| Install a specific version | `pipx install slopguard==1.0.0` |
+| Install the latest unreleased code | `pipx install git+https://github.com/patsypppe/slopguard` |
+| Hack on it | `git clone https://github.com/patsypppe/slopguard && cd slopguard && make install` (or open it in [Codespaces](https://codespaces.new/patsypppe/slopguard)) |
+
+On macOS and most Linux systems the command is `python3`; `python: command not found` only means that.
+On Windows use `py` instead of `python3`.
+
+</details>
+
+**In CI**, no install step is needed. Use the GitHub Action:
+
+```yaml
+# .github/workflows/slopguard.yml
+name: slopguard
+on: [pull_request]
+permissions: { contents: read, security-events: write }
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: patsypppe/slopguard@v1.0.0
+```
+
+**Before every commit**, with [pre-commit](https://pre-commit.com):
+
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/patsypppe/slopguard
+    rev: v1.0.0
+    hooks:
+      - id: slopguard
+```
 
 ## See it work
 
@@ -45,21 +108,9 @@ vulnerable_agent/app.py
 ```
 
 Every flow finding shows the path the data took, so you can judge it in seconds. Each finding also has a
-`fix:` line and a longer explanation: `slopguard explain LLM-02`.
-
-## Install
-
-Not on PyPI yet. From a clone:
-
-```bash
-git clone https://github.com/patsypppe/slopguard
-cd slopguard
-python3 -m venv .venv && . .venv/bin/activate
-pip install -e .
-slopguard --version
-```
-
-Once published: `pipx install --pre slopguard`. Maintainers: see [releasing](docs/releasing.md).
+`fix:` line and a longer explanation: `slopguard explain LLM-02`. No model is involved: slopguard reads the
+code's structure and follows values from where they come from to where they are used
+([how it works](docs/how-it-works.md)).
 
 ## Quickstart
 
@@ -72,15 +123,6 @@ slopguard scan src --spec SPEC.md             # check the code against a require
 slopguard explain LLM-02                      # why a rule exists, and how to fix it
 ```
 
-**In CI (GitHub Actions):**
-
-```yaml
-permissions: { contents: read, security-events: write }
-steps:
-  - uses: actions/checkout@v4
-  - uses: patsypppe/slopguard@main
-```
-
 **From Python**, for example to check an assistant's answer before saving it:
 
 ```python
@@ -89,7 +131,8 @@ import slopguard
 blockers = [f for f in slopguard.scan_source(answer) if f.severity >= slopguard.Severity.HIGH]
 ```
 
-New to it? The [getting-started guide](docs/getting-started.md) takes five minutes. Adopting on a big
+New to it? The [getting-started guide](docs/getting-started.md) takes five minutes, and has a
+ten-line test file that shows every kind of finding. Adopting on a big
 codebase? Start with a [baseline](docs/suppressing-findings.md#3-a-baseline-for-existing-code) so only new
 problems fail.
 
@@ -143,10 +186,12 @@ This measures noise only: those packages are not AI-generated.
   ([how it works](docs/how-it-works.md#what-it-cannot-see)).
 - **Without a model, the spec check compares names and words.** It can show code exists, not that it behaves
   correctly. In the demo it reports a requirement as met while the code does the opposite.
-- **Not yet run live:** the Anthropic, OpenAI and Ollama clients are tested against local servers that mimic
-  their wire formats, and the Docker sandbox backend has not run against a Docker daemon.
+- **Experimental parts.** `scan --spec --llm`, `gen-tests`, `fix` and the Docker sandbox are tested against
+  local stand-ins, not live services, so they are outside the 1.0 stability promise
+  ([what 1.0 promises](docs/decisions/0002-what-1-0-promises.md)).
 - **Python only.** JavaScript and TypeScript files are skipped, and the scan says so when it finds nothing to read.
-- **Linux CI only.** macOS and Windows should work for scanning but are untested.
+- **Linux CI only.** Installing and running on macOS has been checked by hand; Windows is untested
+  ([#6](https://github.com/patsypppe/slopguard/issues/6)).
 
 ## Documentation
 
@@ -167,7 +212,19 @@ This measures noise only: those packages are not AI-generated.
 
 Contributions are welcome: rules, false-positive reports, docs and tests. The most valuable thing you can
 do is **report a false positive or a miss with the smallest code that shows it**; every confirmed report
-becomes a regression test. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and
+becomes a regression test.
+
+**Looking for something to work on?** Every open issue says why it matters, which files to change, and
+when it is done:
+
+| Start here | |
+| --- | --- |
+| [Good first issues](https://github.com/patsypppe/slopguard/labels/good%20first%20issue) | Small and well-defined: aliases, output formats, docs, test samples |
+| [Help wanted](https://github.com/patsypppe/slopguard/labels/help%20wanted) | New rules and integrations |
+| [Advanced](https://github.com/patsypppe/slopguard/labels/advanced) | The flow tracker and bigger design questions; discuss before coding |
+
+Comment on an issue before you start so nobody duplicates work. Setup takes one click in
+[Codespaces](https://codespaces.new/patsypppe/slopguard), or `make install` locally. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and
 [writing a rule](docs/writing-rules.md), and please follow the [code of conduct](CODE_OF_CONDUCT.md).
 Questions go in [Discussions or issues](SUPPORT.md); security problems in
 [SECURITY.md](SECURITY.md).

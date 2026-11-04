@@ -86,7 +86,7 @@ def scan(
     no_network: bool = typer.Option(False, "--no-network", help="Skip PyPI lookups."),
     config_path: Path | None = typer.Option(None, "--config", help="Path to a slopguard.toml."),
     spec: Path | None = typer.Option(None, "--spec", help="Check the code against this spec file."),
-    use_llm: bool = typer.Option(False, "--llm", help="Let the configured model judge --spec requirements."),
+    use_llm: bool = typer.Option(False, "--llm", help="Experimental: let the configured model judge --spec requirements."),
 ) -> None:
     """Scan code for LLM-app vulnerabilities, hallucinated imports and unfinished code."""
     try:
@@ -253,7 +253,7 @@ def gen_tests(
     run: bool = typer.Option(False, "--run", help="Run the tests in the sandbox and report per requirement."),
     config_path: Path | None = typer.Option(None, "--config"),
 ) -> None:
-    """Ask the configured model for pytest tests that check each requirement."""
+    """Experimental: ask the configured model for pytest tests that check each requirement."""
     from slopguard.gentests import apply_test_results, generate_tests
     from slopguard.spec import build_index, judge_heuristic
 
@@ -310,7 +310,7 @@ def fix(
     no_network: bool = typer.Option(False, "--no-network"),
     config_path: Path | None = typer.Option(None, "--config"),
 ) -> None:
-    """Scan, ask the configured model for fixes, re-scan, and keep only real improvements.
+    """Experimental: ask the configured model for fixes, re-scan, keep only real improvements.
 
     By default this only prints a diff. Use --apply to write the files.
     """

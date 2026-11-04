@@ -2,6 +2,11 @@
 
 Scanning is the core of slopguard and needs nothing but the code. These commands go further: they check code against what you asked for, compare it with the rest of the repo and its tests, and can propose repairs. Anything that uses a model is opt-in and says what it will send first.
 
+> **Experimental in 1.0.** `scan --spec --llm`, `gen-tests` and `fix` are tested against local servers
+> that mimic the Anthropic, OpenAI and Ollama APIs, not against the live services, and the Docker sandbox
+> backend has not been run by the maintainers. Their options and output may change in a minor release.
+> Everything else on this page (offline spec checks, drift, `regress`) is covered by the 1.0 promise.
+
 | You want to know | Use |
 | --- | --- |
 | Does the code do what the spec asks? | [`scan --spec`](#checking-code-against-a-spec) |
