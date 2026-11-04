@@ -60,8 +60,10 @@ As a workaround, suppress the line.
 **HAL-04 says a package is undeclared, but it is installed.**
 It is probably installed as a dependency of something you did declare. `pydantic_core`, for example, comes
 with `pydantic`. Importing it directly works today and breaks the day `pydantic` stops depending on it, so
-the fix is to declare it. slopguard reads `requirements*.txt` and `pyproject.toml` in the file's own folder
-and every folder above it, so a subproject or fixture folder can declare its own dependencies.
+the fix is to declare it. slopguard reads, in the file's own folder and every folder above it:
+`requirements*.txt`, `requirements/*.txt`, `pyproject.toml` (`[project]` dependencies and extras,
+`[dependency-groups]`, Poetry, uv and PDM dev dependencies, Hatch environments), `setup.cfg` and `Pipfile`.
+A subproject or fixture folder can declare its own. Files that only hold tool settings do not count.
 
 **A key named `FAKE_KEY` or `TEST_API_KEY` is reported.**
 It is reported as **low** severity, so it does not fail a build, because a real key named like test data still

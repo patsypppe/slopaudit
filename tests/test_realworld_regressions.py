@@ -159,3 +159,32 @@ def test_a_credential_named_like_test_data_is_low_severity(scan):
     assert "named like test data" in found[1].message
     assert found[3].severity.label == "critical"   # a normal name stays critical
     assert found[4].severity.label == "critical"   # "latest" must not read as "test"
+
+
+def test_dev_and_environment_dependency_tables_count_as_declared(scan):
+    pyproject = (
+        '[project]\nname = "x"\nversion = "0"\ndependencies = ["requests"]\n'
+        '[tool.uv]\ndev-dependencies = ["langgraph>=0.2"]\n'
+        '[tool.pdm.dev-dependencies]\ntest = ["respx"]\n'
+        '[tool.hatch.envs.default]\ndependencies = ["freezegun"]\nextra-dependencies = ["dirty-equals"]\n'
+    )
+    source = "import langgraph\nimport respx\nimport freezegun\nimport dirty_equals\nimport numpy\n"
+    found = scan({"pyproject.toml": pyproject, "a.py": source}, rule_ids=("HAL-04",))
+    assert [f.message.split("`")[1] for f in found] == ["numpy"]
+
+
+def test_setup_cfg_and_pipfile_are_read(scan):
+    setup_cfg = "[options]\ninstall_requires =\n    requests>=2\n    langgraph\n[options.extras_require]\ndev =\n    pytest\n"
+    pipfile = '[packages]\nhttpx = "*"\n[dev-packages]\nrespx = "*"\n'
+    source = "import requests\nimport langgraph\nimport pytest\nimport httpx\nimport respx\nimport numpy\n"
+    found = scan({"setup.cfg": setup_cfg, "Pipfile": pipfile, "a.py": source}, rule_ids=("HAL-04",))
+    assert [f.message.split("`")[1] for f in found] == ["numpy"]
+
+
+def test_config_only_files_are_not_dependency_manifests(scan):
+    files = {
+        "pyproject.toml": "[tool.ruff]\nline-length = 100\n",
+        "setup.cfg": "[flake8]\nmax-line-length = 100\n",
+        "a.py": "import numpy\n",
+    }
+    assert scan(files, rule_ids=("HAL-04",)) == []  # nothing declares dependencies, so no opinion

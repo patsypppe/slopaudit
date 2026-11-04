@@ -3,7 +3,16 @@
 All notable changes are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/),
 and versions follow [Semantic Versioning](https://semver.org/).
 
-## [1.0.0rc2] - unreleased
+## Unreleased
+
+### Fixed
+
+- HAL-04 now reads uv and PDM dev dependencies, Hatch environments, `setup.cfg` and `Pipfile`, so packages
+  declared there are no longer reported as undeclared.
+- A `pyproject.toml` or `setup.cfg` that only holds tool settings (such as `[tool.ruff]` or `[flake8]`) no
+  longer counts as a manifest that declares nothing, which made HAL-04 flag every third-party import.
+
+## [1.0.0rc2] - on TestPyPI
 
 Fixes from running slopguard on a real project (an agent with fixture packages and a Postgres store).
 
