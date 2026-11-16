@@ -75,6 +75,7 @@ def scan(
     fmt: str = typer.Option("terminal", "--format", "-f", help="terminal, json, markdown or sarif."),
     output: Path | None = typer.Option(None, "--output", "-o", help="Write the report here."),
     severity: str | None = typer.Option(None, "--severity", help="Minimum severity to report."),
+    min_confidence: float | None = typer.Option(None, "--min-confidence", help="Hide findings below this confidence (0 to 1)."),
     fail_on: str | None = typer.Option(None, "--fail-on", help="Exit 1 at this severity or above, or 'none' (default: high)."),
     module: list[str] | None = typer.Option(None, "--module", "-m", help="Run only these modules."),
     rule: list[str] | None = typer.Option(None, "--rule", "-r", help="Run only these rule IDs."),
@@ -93,7 +94,7 @@ def scan(
         exit_code = _scan(
             paths or [Path(".")], fmt, output, severity, fail_on, module or [], rule or [],
             exclude or [], diff, staged, baseline, write_baseline_to, no_network, config_path,
-            spec, use_llm,
+            spec, use_llm, min_confidence,
         )
     except typer.Exit:
         raise
@@ -103,9 +104,12 @@ def scan(
 
 
 def _scan(paths, fmt, output, severity, fail_on, modules, rule_ids, exclude, diff, staged,
-          baseline, write_baseline_to, no_network, config_path, spec=None, use_llm=False) -> int:
+          baseline, write_baseline_to, no_network, config_path, spec=None, use_llm=False,
+          min_confidence=None) -> int:
     if fmt not in FORMATS:
         raise _fail(f"unknown format {fmt!r}; expected one of: {', '.join(FORMATS)}")
+    if min_confidence is not None and not 0 <= min_confidence <= 1:
+        raise _fail("--min-confidence must be between 0 and 1")
     missing = [p for p in paths if not p.exists()]
     if missing:
         raise _fail(f"path not found: {missing[0]}")
@@ -117,6 +121,7 @@ def _scan(paths, fmt, output, severity, fail_on, modules, rule_ids, exclude, dif
         if fail_on:
             config.fail_on = fail_on.lower()
         threshold = config.fail_threshold()
+        minimum_confidence = config.min_confidence if min_confidence is None else min_confidence
     except (ConfigError, ValueError) as exc:
         raise _fail(str(exc)) from exc
 
@@ -153,6 +158,8 @@ def _scan(paths, fmt, output, severity, fail_on, modules, rule_ids, exclude, dif
         findings = [f for f in findings if f.fingerprint() not in known]
     if minimum is not None:
         findings = [f for f in findings if f.severity >= minimum]
+    if minimum_confidence > 0:
+        findings = [f for f in findings if f.confidence >= minimum_confidence]
 
     _emit(fmt, output, findings, rules, result.files_scanned, result.errors)
     if threshold is not None and any(f.severity >= threshold for f in findings):

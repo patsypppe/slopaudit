@@ -19,6 +19,7 @@ Every setting is optional. Unknown module names, bad types and unknown providers
 | --- | --- | --- | --- |
 | `exclude` | list of globs | `[]` | Paths to skip, matched against the path relative to the project root. `*` also matches `/`, so `tests/fixtures/**` works. Add more on the command line with `--exclude`. |
 | `fail_on` | string | `"high"` | Exit code 1 at this severity or above: `critical`, `high`, `medium`, `low`, `info`, or `none`. `--fail-on` overrides it. |
+| `min_confidence` | number | `0.0` | Hide findings whose confidence is below this value, between 0 and 1. `--min-confidence` overrides it. |
 
 Always skipped: `.git`, `.hg`, `.venv`, `venv`, `env`, `node_modules`, `__pycache__`, `.tox`, `.nox`,
 `.mypy_cache`, `.pytest_cache`, `.ruff_cache`, `site-packages`, `dist`, `build`, `.next`, `.nuxt`,

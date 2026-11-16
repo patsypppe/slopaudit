@@ -52,6 +52,7 @@ class ConfigError(Exception):
 class Config:
     exclude: list[str] = field(default_factory=list)
     fail_on: str = "high"
+    min_confidence: float = 0.0
     modules: dict[str, bool] = field(
         default_factory=lambda: {m: m not in DEFAULT_OFF for m in MODULES}
     )
@@ -92,6 +93,15 @@ class Config:
                 except ValueError as exc:
                     raise ConfigError(f"scan.fail_on: {exc}") from exc
             cfg.fail_on = value
+        if "min_confidence" in scan:
+            confidence = scan["min_confidence"]
+            if (
+                isinstance(confidence, bool)
+                or not isinstance(confidence, (int, float))
+                or not 0 <= confidence <= 1
+            ):
+                raise ConfigError("scan.min_confidence: expected a number between 0 and 1")
+            cfg.min_confidence = float(confidence)
 
         modules = _table(data, "modules")
         for name, enabled in modules.items():

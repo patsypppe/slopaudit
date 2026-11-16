@@ -82,6 +82,35 @@ def test_fail_on_none_and_severity_filter(project):
     assert low.exit_code == 0
 
 
+def test_min_confidence_filters_findings(project):
+    sure = invoke("scan", str(project), "--no-network", "-f", "json", "--min-confidence", "0")
+    assert sure.exit_code == 1
+    assert len(json.loads(sure.stdout)["findings"]) == 1
+
+    unsure = invoke("scan", str(project), "--no-network", "-f", "json", "--min-confidence", "1")
+    assert unsure.exit_code == 0
+    assert json.loads(unsure.stdout)["findings"] == []
+
+
+def test_min_confidence_comes_from_config_and_cli_overrides_it(project):
+    (project / "slopaudit.toml").write_text("[scan]\nmin_confidence = 1.0\n")
+    assert invoke("scan", str(project), "--no-network").exit_code == 0
+    override = invoke("scan", str(project), "--no-network", "--min-confidence", "0")
+    assert override.exit_code == 1
+
+
+def test_min_confidence_out_of_range_is_an_error(project):
+    (project / "slopaudit.toml").write_text("[scan]\nmin_confidence = 1.5\n")
+    from_config = invoke("scan", str(project), "--no-network")
+    assert from_config.exit_code == 2
+    assert "between 0 and 1" in from_config.output
+
+    (project / "slopaudit.toml").unlink()
+    from_cli = invoke("scan", str(project), "--no-network", "--min-confidence", "1.5")
+    assert from_cli.exit_code == 2
+    assert "between 0 and 1" in from_cli.output
+
+
 def test_rule_and_module_filters(project):
     (project / "stub.py").write_text("def f():\n    pass\n")
     only = invoke("scan", str(project), "--no-network", "-r", "INC-02", "-f", "json")

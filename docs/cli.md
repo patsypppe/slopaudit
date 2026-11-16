@@ -28,6 +28,7 @@ slopaudit scan [OPTIONS] [PATHS...]
 | `--format`, `-f` | terminal, json, markdown or sarif. | `terminal` |
 | `--output`, `-o` | Write the report here. |  |
 | `--severity` | Minimum severity to report. |  |
+| `--min-confidence` | Hide findings below this confidence (0 to 1). |  |
 | `--fail-on` | Exit 1 at this severity or above, or 'none' (default: high). |  |
 | `--module`, `-m` | Run only these modules. |  |
 | `--rule`, `-r` | Run only these rule IDs. |  |
