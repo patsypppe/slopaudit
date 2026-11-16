@@ -67,6 +67,16 @@ packages = ["src/slopaudit"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
+[tool.coverage.run]
+source = ["slopaudit"]
+
+[tool.coverage.report]
+# A few points below the measured total, so the gate catches drops without
+# failing on small refactors. Raise it when the suite grows.
+fail_under = 90
+show_missing = true
+skip_covered = true
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
