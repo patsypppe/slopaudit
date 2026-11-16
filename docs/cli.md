@@ -40,6 +40,7 @@ slopaudit scan [OPTIONS] [PATHS...]
 | `--config` | Path to a slopaudit.toml. |  |
 | `--spec` | Check the code against this spec file. |  |
 | `--llm` | Experimental: let the configured model judge --spec requirements. | off |
+| `--compact` | One line per finding: path:line, severity, rule, message (terminal only). | off |
 
 ## slopaudit regress
 

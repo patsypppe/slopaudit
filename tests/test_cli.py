@@ -204,3 +204,14 @@ def test_zero_files_is_not_reported_as_clean(tmp_path):
     result = invoke("scan", str(tmp_path), "--no-network")
     assert result.exit_code == 0
     assert "no supported files found" in result.stdout and "not a clean result" in result.stdout
+
+
+def test_compact_prints_one_line_per_finding(project):
+    full = invoke("scan", str(project), "--no-network")
+    compact = invoke("scan", str(project), "--no-network", "--compact")
+    assert compact.exit_code == 1
+    assert "bad.py:3  CRITICAL  LLM-02" in compact.stdout
+    assert "eval(r.content[0].text)" not in compact.stdout
+    assert "fix:" not in compact.stdout
+    assert "files scanned" in compact.stdout
+    assert "fix:" in full.stdout

@@ -35,24 +35,39 @@ def summarize(findings: list[Finding]) -> dict[str, int]:
 
 
 def render_terminal(
-    findings: list[Finding], console: Console, files_scanned: int, errors: list[str]
+    findings: list[Finding],
+    console: Console,
+    files_scanned: int,
+    errors: list[str],
+    *,
+    compact: bool = False,
 ) -> None:
-    for path, group in groupby(findings, key=lambda f: f.path):
-        console.print(Text(path, style="bold underline"))
-        for finding in group:
-            line = Text("  ")
-            line.append(f"{finding.line}", style="dim")
-            line.append("  ")
-            line.append(f" {finding.severity.label.upper()} ", style=SEVERITY_STYLE[finding.severity])
-            line.append(f"  {finding.rule_id}  ", style="bold")
+    if compact:
+        for finding in findings:
+            line = Text(f"{finding.path}:{finding.line}  ", style="bold")
+            line.append(
+                f"{finding.severity.label.upper()}  ", style=SEVERITY_STYLE[finding.severity]
+            )
+            line.append(f"{finding.rule_id}  ", style="bold")
             line.append(finding.message)
             console.print(line)
-            if finding.excerpt:
-                console.print(Text(f"        {finding.excerpt[:120]}", style="dim"))
-            for step in finding.trace:
-                console.print(Text(f"        ↳ {step}", style="dim"))
-            console.print(Text(f"        fix: {finding.fix}", style="green"))
-        console.print()
+    else:
+        for path, group in groupby(findings, key=lambda f: f.path):
+            console.print(Text(path, style="bold underline"))
+            for finding in group:
+                line = Text("  ")
+                line.append(f"{finding.line}", style="dim")
+                line.append("  ")
+                line.append(f" {finding.severity.label.upper()} ", style=SEVERITY_STYLE[finding.severity])
+                line.append(f"  {finding.rule_id}  ", style="bold")
+                line.append(finding.message)
+                console.print(line)
+                if finding.excerpt:
+                    console.print(Text(f"        {finding.excerpt[:120]}", style="dim"))
+                for step in finding.trace:
+                    console.print(Text(f"        ↳ {step}", style="dim"))
+                console.print(Text(f"        fix: {finding.fix}", style="green"))
+            console.print()
     for error in errors:
         console.print(Text(f"warning: {error}", style="yellow"))
     if files_scanned == 0:

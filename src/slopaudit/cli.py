@@ -87,13 +87,14 @@ def scan(
     config_path: Path | None = typer.Option(None, "--config", help="Path to a slopaudit.toml."),
     spec: Path | None = typer.Option(None, "--spec", help="Check the code against this spec file."),
     use_llm: bool = typer.Option(False, "--llm", help="Experimental: let the configured model judge --spec requirements."),
+    compact: bool = typer.Option(False, "--compact", help="One line per finding: path:line, severity, rule, message (terminal only)."),
 ) -> None:
     """Scan code for LLM-app vulnerabilities, hallucinated imports and unfinished code."""
     try:
         exit_code = _scan(
             paths or [Path(".")], fmt, output, severity, fail_on, module or [], rule or [],
             exclude or [], diff, staged, baseline, write_baseline_to, no_network, config_path,
-            spec, use_llm,
+            spec, use_llm, compact,
         )
     except typer.Exit:
         raise
@@ -103,7 +104,8 @@ def scan(
 
 
 def _scan(paths, fmt, output, severity, fail_on, modules, rule_ids, exclude, diff, staged,
-          baseline, write_baseline_to, no_network, config_path, spec=None, use_llm=False) -> int:
+          baseline, write_baseline_to, no_network, config_path, spec=None, use_llm=False,
+          compact=False) -> int:
     if fmt not in FORMATS:
         raise _fail(f"unknown format {fmt!r}; expected one of: {', '.join(FORMATS)}")
     missing = [p for p in paths if not p.exists()]
@@ -154,7 +156,7 @@ def _scan(paths, fmt, output, severity, fail_on, modules, rule_ids, exclude, dif
     if minimum is not None:
         findings = [f for f in findings if f.severity >= minimum]
 
-    _emit(fmt, output, findings, rules, result.files_scanned, result.errors)
+    _emit(fmt, output, findings, rules, result.files_scanned, result.errors, compact=compact)
     if threshold is not None and any(f.severity >= threshold for f in findings):
         return EXIT_FINDINGS
     return EXIT_OK
@@ -201,9 +203,9 @@ def _spec_findings(spec: Path, paths, root: Path, config: Config, use_llm: bool)
     return verdict_findings(_rel_to(spec.resolve(), root), verdicts)
 
 
-def _emit(fmt, output, findings, rules, files_scanned, errors) -> None:
+def _emit(fmt, output, findings, rules, files_scanned, errors, compact=False) -> None:
     if fmt == "terminal" and output is None:
-        render_terminal(findings, Console(), files_scanned, errors)
+        render_terminal(findings, Console(), files_scanned, errors, compact=compact)
         return
     if fmt == "json":
         text = to_json(findings, files_scanned, errors)
@@ -214,7 +216,7 @@ def _emit(fmt, output, findings, rules, files_scanned, errors) -> None:
     else:
         with Path(output).open("w") as handle:
             console = Console(file=handle, width=100, color_system=None)
-            render_terminal(findings, console, files_scanned, errors)
+            render_terminal(findings, console, files_scanned, errors, compact=compact)
         return
     if output:
         Path(output).write_text(text if text.endswith("\n") else text + "\n")
