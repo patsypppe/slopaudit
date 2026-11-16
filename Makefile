@@ -1,4 +1,4 @@
-.PHONY: help install test lint scan bench check docs build clean
+.PHONY: help install test fuzz lint scan bench check docs build clean
 
 PY ?= python3
 
@@ -10,6 +10,9 @@ install:        ## editable install with dev tools
 
 test:           ## run the test suite
 	$(PY) -m pytest -q
+
+fuzz:           ## run the optional fuzz test (pip install -e ".[dev,fuzz]")
+	$(PY) -m pytest -q -m fuzz
 
 lint:           ## ruff on code, tests and benchmark scripts
 	ruff check src tests benchmarks/compare.py benchmarks/realworld.py

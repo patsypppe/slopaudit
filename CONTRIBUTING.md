@@ -37,6 +37,7 @@ make check          # lint, tests, scan itself, benchmark gate: what CI runs
 ```
 
 Other targets: `make test`, `make lint`, `make docs` (regenerate `docs/rules.md` and `docs/cli.md`),
+`make fuzz` (property tests over generated Python; needs `pip install -e ".[dev,fuzz]"`),
 `make build`, `make help`. Without `make`, read the [Makefile](Makefile); every target is one short command.
 Optionally `pip install pre-commit && pre-commit install` to run the basic checks on every commit.
 

@@ -33,6 +33,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "pytest-cov>=5", "ruff>=0.5"]
+fuzz = ["hypothesis>=6", "hypothesmith>=0.3"]
 
 [project.urls]
 Homepage = "https://github.com/patsypppe/slopaudit"
@@ -66,6 +67,9 @@ packages = ["src/slopaudit"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Fuzzing is a slower, optional extra; run it explicitly with `pytest -m fuzz`.
+addopts = "-m 'not fuzz'"
+markers = ["fuzz: property tests over generated Python (needs the fuzz extra)"]
 
 [tool.ruff]
 line-length = 100
