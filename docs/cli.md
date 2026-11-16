@@ -35,6 +35,7 @@ slopaudit scan [OPTIONS] [PATHS...]
 | `--diff` | Scan only files changed against this git ref. |  |
 | `--staged` | Scan only files staged for commit. | off |
 | `--baseline` | Ignore findings recorded in this file. |  |
+| `--prune-baseline` | Rewrite --baseline without entries that no longer match a finding. | off |
 | `--write-baseline` | Record current findings as a baseline. |  |
 | `--no-network` | Skip PyPI lookups. | off |
 | `--config` | Path to a slopaudit.toml. |  |

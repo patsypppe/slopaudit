@@ -116,6 +116,47 @@ def test_baseline_roundtrip(project, tmp_path):
     assert [f["path"] for f in json.loads(third.stdout)["findings"]] == ["new.py"]
 
 
+def test_stale_baseline_entries_are_reported_and_pruned(project, tmp_path):
+    base = tmp_path / "base.json"
+    invoke("scan", str(project), "--no-network", "--write-baseline", str(base))
+    assert len(json.loads(base.read_text())["fingerprints"]) == 1
+
+    (project / "bad.py").write_text("x = 1\n")
+    report_only = invoke(
+        "scan", str(project), "--no-network", "--baseline", str(base)
+    )
+    assert report_only.exit_code == 0
+    assert "1 baseline entry" in report_only.output
+    assert len(json.loads(base.read_text())["fingerprints"]) == 1
+
+    pruned = invoke(
+        "scan", str(project), "--no-network", "--baseline", str(base), "--prune-baseline"
+    )
+    assert pruned.exit_code == 0
+    assert "pruned" in pruned.output
+    assert json.loads(base.read_text())["fingerprints"] == []
+
+
+def test_prune_baseline_requires_a_baseline(project):
+    result = invoke("scan", str(project), "--no-network", "--prune-baseline")
+    assert result.exit_code == 2
+    assert "needs --baseline" in result.output
+
+
+def test_prune_baseline_refuses_a_filtered_scan(project, tmp_path):
+    base = tmp_path / "base.json"
+    invoke("scan", str(project), "--no-network", "--write-baseline", str(base))
+    before = base.read_text()
+
+    result = invoke(
+        "scan", str(project), "--no-network", "--baseline", str(base),
+        "--prune-baseline", "--rule", "undefined-name",
+    )
+    assert result.exit_code == 2
+    assert "unfiltered scan" in result.output
+    assert base.read_text() == before
+
+
 def test_config_file_exclude_and_module_toggle(project):
     (project / "slopaudit.toml").write_text('[scan]\nexclude = ["bad.py"]\n')
     result = invoke("scan", str(project), "--no-network")

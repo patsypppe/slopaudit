@@ -39,7 +39,18 @@ slopaudit scan . --baseline .slopaudit-baseline.json          # in CI
 
 A baseline entry is identified by the rule, the file and the text of the offending line, not its
 line number, so moving code around does not resurrect old findings. Changing the offending line
-does, which is what you want. Delete entries by regenerating the file as you fix things.
+does, which is what you want.
+
+A scan with `--baseline` reports entries that no longer match any finding. Rewrite the file without
+them with `--prune-baseline`, so the baseline keeps measuring the debt that is actually left:
+
+```bash
+slopaudit scan . --baseline .slopaudit-baseline.json --prune-baseline
+```
+
+Prune only after a scan of the whole project the baseline covers. `--prune-baseline` is refused
+together with `--diff`, `--staged`, `--rule` or `--module`, because entries for the files those
+options leave out would look stale and be deleted.
 
 ## 4. Raise the bar
 

@@ -9,6 +9,7 @@ import os
 import re
 import subprocess
 import warnings
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -184,6 +185,10 @@ def load_baseline(path: Path) -> set[str]:
     return set(data.get("fingerprints", []))
 
 
-def write_baseline(path: Path, findings: list[Finding]) -> None:
-    payload = {"version": 1, "fingerprints": sorted({f.fingerprint() for f in findings})}
+def write_baseline_fingerprints(path: Path, fingerprints: Iterable[str]) -> None:
+    payload = {"version": 1, "fingerprints": sorted(set(fingerprints))}
     path.write_text(json.dumps(payload, indent=1) + "\n")
+
+
+def write_baseline(path: Path, findings: list[Finding]) -> None:
+    write_baseline_fingerprints(path, (f.fingerprint() for f in findings))

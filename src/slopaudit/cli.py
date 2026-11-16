@@ -21,6 +21,7 @@ from slopaudit.engine import (
     load_baseline,
     run_scan,
     write_baseline,
+    write_baseline_fingerprints,
 )
 from slopaudit.llm import LLMError, get_provider
 from slopaudit.models import Rule, Severity
@@ -82,6 +83,7 @@ def scan(
     diff: str | None = typer.Option(None, "--diff", help="Scan only files changed against this git ref."),
     staged: bool = typer.Option(False, "--staged", help="Scan only files staged for commit."),
     baseline: Path | None = typer.Option(None, "--baseline", help="Ignore findings recorded in this file."),
+    prune_baseline: bool = typer.Option(False, "--prune-baseline", help="Rewrite --baseline without entries that no longer match a finding."),
     write_baseline_to: Path | None = typer.Option(None, "--write-baseline", help="Record current findings as a baseline."),
     no_network: bool = typer.Option(False, "--no-network", help="Skip PyPI lookups."),
     config_path: Path | None = typer.Option(None, "--config", help="Path to a slopaudit.toml."),
@@ -93,7 +95,7 @@ def scan(
         exit_code = _scan(
             paths or [Path(".")], fmt, output, severity, fail_on, module or [], rule or [],
             exclude or [], diff, staged, baseline, write_baseline_to, no_network, config_path,
-            spec, use_llm,
+            spec, use_llm, prune_baseline,
         )
     except typer.Exit:
         raise
@@ -103,9 +105,16 @@ def scan(
 
 
 def _scan(paths, fmt, output, severity, fail_on, modules, rule_ids, exclude, diff, staged,
-          baseline, write_baseline_to, no_network, config_path, spec=None, use_llm=False) -> int:
+          baseline, write_baseline_to, no_network, config_path, spec=None, use_llm=False,
+          prune_baseline=False) -> int:
     if fmt not in FORMATS:
         raise _fail(f"unknown format {fmt!r}; expected one of: {', '.join(FORMATS)}")
+    if prune_baseline and baseline is None:
+        raise _fail("--prune-baseline needs --baseline")
+    if prune_baseline and (diff or staged or rule_ids or modules):
+        # A filtered scan only sees part of the codebase, so entries belonging to
+        # the files it skipped would look stale and be dropped for good.
+        raise _fail("--prune-baseline needs an unfiltered scan; drop --diff, --staged, --rule and --module")
     missing = [p for p in paths if not p.exists()]
     if missing:
         raise _fail(f"path not found: {missing[0]}")
@@ -150,6 +159,17 @@ def _scan(paths, fmt, output, severity, fail_on, modules, rule_ids, exclude, dif
             known = load_baseline(baseline)
         except RuntimeError as exc:
             raise _fail(str(exc)) from exc
+        current = {f.fingerprint() for f in findings}
+        stale = known - current
+        if stale:
+            Console(stderr=True).print(
+                f"{len(stale)} baseline entr{'y' if len(stale) == 1 else 'ies'} "
+                f"no longer match any finding",
+                markup=False,
+            )
+            if prune_baseline:
+                write_baseline_fingerprints(baseline, known - stale)
+                Console(stderr=True).print(f"pruned {baseline}", markup=False)
         findings = [f for f in findings if f.fingerprint() not in known]
     if minimum is not None:
         findings = [f for f in findings if f.severity >= minimum]
