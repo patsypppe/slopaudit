@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import typer
 from rich.console import Console
@@ -42,8 +43,18 @@ FORMATS = ("terminal", "json", "markdown", "sarif")
 EXIT_OK, EXIT_FINDINGS, EXIT_USAGE, EXIT_INTERNAL = 0, 1, 2, 3
 
 
+_NO_COLOR = False
+
+
+def _console(*, stderr: bool = False, **kwargs: Any) -> Console:
+    if _NO_COLOR:
+        # no_color alone still lets Rich emit bold/underline escapes.
+        kwargs.setdefault("color_system", None)
+    return Console(stderr=stderr, no_color=_NO_COLOR, **kwargs)
+
+
 def _fail(message: str, code: int = EXIT_USAGE) -> typer.Exit:
-    Console(stderr=True).print(f"error: {message}", markup=False)
+    _console(stderr=True).print(f"error: {message}", markup=False)
     return typer.Exit(code)
 
 
@@ -58,8 +69,13 @@ def main(  # slopaudit: ignore[INC-02] Typer callback, body is intentionally emp
     version: bool = typer.Option(
         False, "--version", callback=_version, is_eager=True, help="Show the version and exit."
     ),
+    no_color: bool = typer.Option(
+        False, "--no-color", help="Disable ANSI colour in the terminal report."
+    ),
 ) -> None:
     """slopaudit command-line interface."""
+    global _NO_COLOR
+    _NO_COLOR = no_color
 
 
 def _select_rules(config: Config, modules: list[str], rule_ids: list[str]) -> list[Rule]:
@@ -144,7 +160,7 @@ def _scan(paths, fmt, output, severity, fail_on, modules, rule_ids, exclude, dif
         )
     if write_baseline_to:
         write_baseline(write_baseline_to, findings)
-        Console(stderr=True).print(f"baseline written to {write_baseline_to}", markup=False)
+        _console(stderr=True).print(f"baseline written to {write_baseline_to}", markup=False)
     if baseline:
         try:
             known = load_baseline(baseline)
@@ -165,7 +181,7 @@ def _provider(config: Config, what: str):
         provider = get_provider(config)
     except LLMError as exc:
         raise _fail(str(exc)) from exc
-    Console(stderr=True).print(
+    _console(stderr=True).print(
         f"sending {what} to {provider.name} ({provider.model}); source stays local otherwise",
         markup=False,
     )
@@ -193,7 +209,7 @@ def _spec_findings(spec: Path, paths, root: Path, config: Config, use_llm: bool)
     if not verdicts:
         raise _fail("no requirements found in the spec; use bullet points, or pass --llm to extract them")
     counts = {s: sum(v.status == s for v in verdicts) for s in ("met", "partial", "missing")}
-    Console(stderr=True).print(
+    _console(stderr=True).print(
         f"spec: {counts['met']} met, {counts['partial']} partial, {counts['missing']} missing "
         f"({'model-judged' if provider else 'name matching only; behaviour not verified'})",
         markup=False,
@@ -203,7 +219,7 @@ def _spec_findings(spec: Path, paths, root: Path, config: Config, use_llm: bool)
 
 def _emit(fmt, output, findings, rules, files_scanned, errors) -> None:
     if fmt == "terminal" and output is None:
-        render_terminal(findings, Console(), files_scanned, errors)
+        render_terminal(findings, _console(), files_scanned, errors)
         return
     if fmt == "json":
         text = to_json(findings, files_scanned, errors)
@@ -213,7 +229,7 @@ def _emit(fmt, output, findings, rules, files_scanned, errors) -> None:
         text = json.dumps(to_sarif(findings, rules), indent=2)
     else:
         with Path(output).open("w") as handle:
-            console = Console(file=handle, width=100, color_system=None)
+            console = _console(file=handle, width=100, color_system=None)
             render_terminal(findings, console, files_scanned, errors)
         return
     if output:
@@ -294,7 +310,7 @@ def gen_tests(
         table.add_column(column)
     for v in verdicts:
         table.add_row(v.requirement.id, v.status, v.source, v.reason)
-    Console().print(table)
+    _console().print(table)
     typer.echo(f"sandbox: {outcome.backend}; exit {outcome.returncode}"
                + ("; timed out" if outcome.timed_out else ""))
     raise typer.Exit(EXIT_OK if outcome.passed else EXIT_FINDINGS)
@@ -333,7 +349,7 @@ def fix(
     project = build_project(root, config, network=not no_network)
     result = repair(read_sources(files, root), rules, project, provider,
                     max_rounds=max_rounds, minimum=minimum)
-    console = Console()
+    console = _console()
     for round_ in result.rounds:
         for attempt in round_.attempts:
             mark = "accepted" if attempt.accepted else "rejected"
@@ -388,7 +404,7 @@ def list_rules(
     for rule in all_rules():
         meta = rule.meta
         table.add_row(meta.id, meta.severity.label, meta.module, meta.status, meta.title)
-    Console().print(table)
+    _console().print(table)
 
 
 @app.command()
@@ -398,7 +414,7 @@ def explain(rule_id: str = typer.Argument(..., help="Rule ID, for example LLM-02
     if rule is None:
         raise _fail(f"unknown rule {rule_id!r}; run `slopaudit rules` to list them")
     meta = rule.meta
-    console = Console()
+    console = _console()
     console.print(f"{meta.id}  {meta.title}", style="bold", markup=False)
     console.print(f"severity: {meta.severity.label}   module: {meta.module}   status: {meta.status}", markup=False)
     if meta.cwe or meta.owasp:
@@ -438,7 +454,7 @@ def bench(
         _print_bench(report)
     problems = report.failing(min_precision, min_recall)
     for problem in problems:
-        Console(stderr=True).print(f"below threshold: {problem}", markup=False)
+        _console(stderr=True).print(f"below threshold: {problem}", markup=False)
     raise typer.Exit(EXIT_FINDINGS if problems else EXIT_OK)
 
 
@@ -456,7 +472,7 @@ def _print_bench(report) -> None:
     table.add_section()
     table.add_row("overall", str(total.tp), str(total.fp), str(total.fn),
                   cell(total.precision), cell(total.recall), cell(total.f1))
-    console = Console()
+    console = _console()
     console.print(table)
     console.print(f"{report.files} labelled files", markup=False)
     for line in report.mismatches:

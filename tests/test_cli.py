@@ -204,3 +204,16 @@ def test_zero_files_is_not_reported_as_clean(tmp_path):
     result = invoke("scan", str(tmp_path), "--no-network")
     assert result.exit_code == 0
     assert "no supported files found" in result.stdout and "not a clean result" in result.stdout
+
+
+def test_no_color_flag_strips_escape_codes(project):
+    env = {"FORCE_COLOR": "1", "TERM": "xterm-256color"}
+    coloured = runner.invoke(
+        app, ["scan", str(project), "--no-network"], env=env
+    )
+    plain = runner.invoke(
+        app, ["--no-color", "scan", str(project), "--no-network"], env=env
+    )
+    assert "\x1b[" in coloured.stdout, "the fixture should render coloured output"
+    assert "\x1b[" not in plain.stdout
+    assert "LLM-02" in plain.stdout
