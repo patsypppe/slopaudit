@@ -12,7 +12,7 @@ from rich.table import Table
 from slopaudit import __version__
 from slopaudit.api import select_rules
 from slopaudit.bench import run_benchmark
-from slopaudit.config import STARTER_CONFIG, Config, ConfigError
+from slopaudit.config import Config, ConfigError
 from slopaudit.context import build_project
 from slopaudit.engine import (
     changed_files,
@@ -29,6 +29,7 @@ from slopaudit.repair import read_sources, repair
 from slopaudit.reporters import render_terminal, to_json, to_markdown, to_sarif
 from slopaudit.rules import all_rules, get_rule
 from slopaudit.sandbox import SandboxError, run_tests
+from slopaudit.scaffold import detect_project, render_starter_config
 from slopaudit.spec import parse_spec, verdict_findings, verify_spec
 
 app = typer.Typer(
@@ -415,7 +416,18 @@ def init(
     target = Path("slopaudit.toml")
     if target.exists() and not force:
         raise _fail(f"{target} already exists; use --force to overwrite")
-    target.write_text(STARTER_CONFIG)
+    profile = detect_project(Path.cwd())
+    if profile.manifest is None:
+        typer.echo("no dependency manifest found")
+    else:
+        typer.echo(f"read {profile.manifest}")
+        typer.echo(f"detected LLM SDKs: {', '.join(profile.llm_sdks) or 'none'}")
+        typer.echo(f"detected agent frameworks: {', '.join(profile.agent_frameworks) or 'none'}")
+    typer.echo(
+        f"{profile.python_files} Python files; "
+        f"drift rules {'enabled' if profile.suggests_drift else 'left off'}"
+    )
+    target.write_text(render_starter_config(profile))
     typer.echo(f"wrote {target}")
 
 

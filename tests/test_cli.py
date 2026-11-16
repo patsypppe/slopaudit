@@ -161,6 +161,25 @@ def test_rules_explain_init(tmp_path, monkeypatch):
     assert invoke("init", "--force").exit_code == 0
 
 
+
+def test_init_tailors_the_config_to_the_project(tmp_path, monkeypatch):
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "demo"\nversion = "0"\ndependencies = ["openai", "langchain"]\n'
+    )
+    (tmp_path / "app.py").write_text("import openai\n")
+    monkeypatch.chdir(tmp_path)
+    result = invoke("init")
+    assert result.exit_code == 0
+    assert "read pyproject.toml" in result.stdout
+    assert "detected LLM SDKs: openai" in result.stdout
+    assert "detected agent frameworks: langchain" in result.stdout
+    assert "drift rules left off" in result.stdout
+    text = (tmp_path / "slopaudit.toml").read_text()
+    assert "#   LLM SDKs: openai" in text
+    assert "drf = false" in text
+    assert invoke("init").exit_code == 2
+    assert invoke("init", "--force").exit_code == 0
+
 def test_staged_scans_only_staged_files(project, monkeypatch):
     import subprocess
 
