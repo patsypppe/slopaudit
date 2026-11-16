@@ -98,6 +98,29 @@ def to_markdown(findings: list[Finding], files_scanned: int) -> str:
     return "\n".join(lines) + "\n"
 
 
+GITLAB_SEVERITY = {
+    Severity.CRITICAL: "critical",
+    Severity.HIGH: "major",
+    Severity.MEDIUM: "minor",
+    Severity.LOW: "info",
+    Severity.INFO: "info",
+}
+
+
+def to_gitlab(findings: list[Finding]) -> list[dict]:
+    """GitLab Code Quality report: an array of findings, keyed by fingerprint."""
+    return [
+        {
+            "description": f.message,
+            "check_name": f.rule_id,
+            "fingerprint": f.fingerprint(),
+            "severity": GITLAB_SEVERITY[f.severity],
+            "location": {"path": f.path, "lines": {"begin": f.line}},
+        }
+        for f in findings
+    ]
+
+
 def to_sarif(findings: list[Finding], rules: list[Rule]) -> dict:
     driver_rules = []
     for rule in rules:

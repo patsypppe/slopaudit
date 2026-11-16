@@ -68,6 +68,19 @@ def test_sarif_output_structure(project, tmp_path):
     assert run["tool"]["driver"]["rules"][res["ruleIndex"]]["id"] == "LLM-02"
 
 
+def test_gitlab_code_quality_output(project):
+    result = invoke("scan", str(project), "--no-network", "-f", "gitlab")
+    assert result.exit_code == 1
+    report = json.loads(result.stdout)
+    assert len(report) == 1
+    entry = report[0]
+    assert set(entry) == {"description", "check_name", "fingerprint", "severity", "location"}
+    assert entry["check_name"] == "LLM-02"
+    assert entry["severity"] == "critical"
+    assert entry["location"] == {"path": "bad.py", "lines": {"begin": 3}}
+    assert entry["fingerprint"]
+
+
 def test_markdown_output(project):
     result = invoke("scan", str(project), "--no-network", "-f", "markdown")
     assert result.stdout.startswith("# slopaudit report")

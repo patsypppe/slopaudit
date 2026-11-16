@@ -26,7 +26,7 @@ from slopaudit.llm import LLMError, get_provider
 from slopaudit.models import Rule, Severity
 from slopaudit.regress import RegressionError, regress
 from slopaudit.repair import read_sources, repair
-from slopaudit.reporters import render_terminal, to_json, to_markdown, to_sarif
+from slopaudit.reporters import render_terminal, to_gitlab, to_json, to_markdown, to_sarif
 from slopaudit.rules import all_rules, get_rule
 from slopaudit.sandbox import SandboxError, run_tests
 from slopaudit.spec import parse_spec, verdict_findings, verify_spec
@@ -38,7 +38,7 @@ app = typer.Typer(
     add_completion=False,
 )
 
-FORMATS = ("terminal", "json", "markdown", "sarif")
+FORMATS = ("terminal", "json", "markdown", "sarif", "gitlab")
 EXIT_OK, EXIT_FINDINGS, EXIT_USAGE, EXIT_INTERNAL = 0, 1, 2, 3
 
 
@@ -72,7 +72,7 @@ def _select_rules(config: Config, modules: list[str], rule_ids: list[str]) -> li
 @app.command()
 def scan(
     paths: list[Path] | None = typer.Argument(None, help="Files or folders to scan."),
-    fmt: str = typer.Option("terminal", "--format", "-f", help="terminal, json, markdown or sarif."),
+    fmt: str = typer.Option("terminal", "--format", "-f", help="terminal, json, markdown, sarif or gitlab."),
     output: Path | None = typer.Option(None, "--output", "-o", help="Write the report here."),
     severity: str | None = typer.Option(None, "--severity", help="Minimum severity to report."),
     fail_on: str | None = typer.Option(None, "--fail-on", help="Exit 1 at this severity or above, or 'none' (default: high)."),
@@ -211,6 +211,8 @@ def _emit(fmt, output, findings, rules, files_scanned, errors) -> None:
         text = to_markdown(findings, files_scanned)
     elif fmt == "sarif":
         text = json.dumps(to_sarif(findings, rules), indent=2)
+    elif fmt == "gitlab":
+        text = json.dumps(to_gitlab(findings), indent=2)
     else:
         with Path(output).open("w") as handle:
             console = Console(file=handle, width=100, color_system=None)
@@ -227,7 +229,7 @@ def regress_cmd(
     base: str = typer.Option("HEAD", "--base", help="Git ref to compare against."),
     run_tests_flag: bool = typer.Option(False, "--run-tests", help="Also run the suite at the base and now."),
     timeout: int = typer.Option(300, "--timeout", help="Seconds allowed per test run."),
-    fmt: str = typer.Option("terminal", "--format", "-f", help="terminal, json, markdown or sarif."),
+    fmt: str = typer.Option("terminal", "--format", "-f", help="terminal, json, markdown, sarif or gitlab."),
     config_path: Path | None = typer.Option(None, "--config"),
 ) -> None:
     """Find deleted, skipped or weakened tests, and tests that passed before and now fail."""

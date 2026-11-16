@@ -88,19 +88,23 @@ arguments with `args: [--fail-on, medium]`.
 
 ## GitLab CI
 
-GitLab's security dashboards use their own report format, so use slopaudit as a pass/fail job and keep
-the SARIF as an artifact:
+GitLab renders Code Quality reports inline in merge requests. `--format gitlab` emits that schema, with
+one entry per finding and slopaudit's stable fingerprint:
 
 ```yaml
 slopaudit:
   image: python:3.12
   script:
     - pip install slopaudit
-    - slopaudit scan . --format sarif --output slopaudit.sarif --fail-on high
+    - slopaudit scan . --format gitlab --output gl-code-quality-report.json --fail-on high
   artifacts:
     when: always
-    paths: [slopaudit.sarif]
+    reports:
+      codequality: gl-code-quality-report.json
 ```
+
+The job still exits 1 at `--fail-on high`, so the report and the gate agree. Keep the SARIF as an
+additional artifact if you also feed a SARIF viewer.
 
 ## Any other CI
 
