@@ -11,7 +11,9 @@ The project root is the nearest folder above the scanned path that contains `.gi
 `slopaudit.toml` or `pyproject.toml`. Run `slopaudit init` for a commented starter file.
 
 Every setting is optional. Unknown module names, bad types and unknown providers are errors
-(exit code 2) so typos do not silently do nothing.
+(exit code 2) so typos do not silently do nothing. An unknown table, option or rule ID is a
+warning on standard error, with a suggestion when the name is close to a real one; the run
+continues with the defaults.
 
 ## `[scan]`
 

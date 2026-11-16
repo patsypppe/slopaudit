@@ -82,6 +82,23 @@ def test_fail_on_none_and_severity_filter(project):
     assert low.exit_code == 0
 
 
+def test_unknown_config_tables_and_options_warn_with_a_suggestion(project):
+    (project / "slopaudit.toml").write_text(
+        '[scna]\nexclude = ["generated/**"]\n\n[scan]\nfial_on = "low"\n'
+    )
+    result = invoke("scan", str(project), "--no-network")
+    assert result.exit_code == 1  # the typo did not change the default fail_on
+    assert "warning: unknown table [scna]; did you mean 'scan'?" in result.output
+    assert "warning: scan.fial_on: unknown option; did you mean 'fail_on'?" in result.output
+
+
+def test_unknown_rule_id_warns_with_a_suggestion(project):
+    (project / "slopaudit.toml").write_text('[rules."LLM-2"]\nenabled = false\n')
+    result = invoke("scan", str(project), "--no-network")
+    assert result.exit_code == 1
+    assert 'warning: rules."LLM-2": no such rule; did you mean' in result.output
+
+
 def test_rule_and_module_filters(project):
     (project / "stub.py").write_text("def f():\n    pass\n")
     only = invoke("scan", str(project), "--no-network", "-r", "INC-02", "-f", "json")

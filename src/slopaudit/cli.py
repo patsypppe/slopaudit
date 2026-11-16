@@ -47,6 +47,12 @@ def _fail(message: str, code: int = EXIT_USAGE) -> typer.Exit:
     return typer.Exit(code)
 
 
+def _warn_config(config: Config) -> None:
+    console = Console(stderr=True)
+    for warning in config.warnings:
+        console.print(f"warning: {warning}", markup=False)
+
+
 def _version(value: bool) -> None:
     if value:
         typer.echo(f"slopaudit {__version__}")
@@ -113,6 +119,7 @@ def _scan(paths, fmt, output, severity, fail_on, modules, rule_ids, exclude, dif
         minimum = Severity.parse(severity) if severity else None
         root = find_root(paths)
         config = Config.load(root, config_path)
+        _warn_config(config)
         config.exclude.extend(exclude)
         if fail_on:
             config.fail_on = fail_on.lower()
@@ -235,7 +242,7 @@ def regress_cmd(
         raise _fail(f"unknown format {fmt!r}; expected one of: {', '.join(FORMATS)}")
     root = find_root([Path(".")])
     try:
-        Config.load(root, config_path)
+        _warn_config(Config.load(root, config_path))
         findings = regress(root, base, run_tests_flag, timeout)
     except (ConfigError, RegressionError) as exc:
         raise _fail(str(exc)) from exc
@@ -263,6 +270,7 @@ def gen_tests(
         config = Config.load(root, config_path)
     except ConfigError as exc:
         raise _fail(str(exc)) from exc
+    _warn_config(config)
     if not spec.is_file():
         raise _fail(f"spec file not found: {spec}")
     requirements = parse_spec(spec.read_text(errors="replace"))
@@ -324,6 +332,7 @@ def fix(
         config = Config.load(root, config_path)
     except (ConfigError, ValueError) as exc:
         raise _fail(str(exc)) from exc
+    _warn_config(config)
     rules = _select_rules(config, [], [])
     suffixes = {".py"}
     files = discover(paths, root, config, suffixes)

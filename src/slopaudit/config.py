@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import difflib
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -16,6 +17,16 @@ from slopaudit.models import Severity
 
 MODULES = ("hal", "inc", "sec", "llm", "drf", "spc", "reg")
 DEFAULT_OFF = frozenset({"drf"})  # opt-in: needs a representative baseline of the repo
+
+TABLES = ("scan", "modules", "network", "packages", "llm", "sandbox", "rules", "taint")
+KEYS = {
+    "scan": ("exclude", "fail_on"),
+    "network": ("registry_lookups", "cache_ttl_hours"),
+    "packages": ("private",),
+    "llm": ("provider", "model", "base_url"),
+    "sandbox": ("backend", "image", "timeout"),
+    "taint": ("sources", "sinks", "sanitizers"),
+}
 
 DEFAULT_EXCLUDE_DIRS = frozenset(
     {
@@ -69,6 +80,7 @@ class Config:
     sandbox_image: str = "python:3.12-slim"
     sandbox_timeout: int = 120
     source_file: Path | None = None
+    warnings: list[str] = field(default_factory=list)
 
     def rule_options(self, rule_id: str) -> dict[str, Any]:
         return self.rules.get(rule_id, {})
@@ -141,6 +153,28 @@ class Config:
         for key, attr in (("sources", "taint_sources"), ("sinks", "taint_sinks"),
                           ("sanitizers", "taint_sanitizers")):
             setattr(cfg, attr, _str_list(_table(data, f"taint.{key}"), "extra"))
+
+        for table in data:
+            if table not in TABLES:
+                cfg.warnings.append(_did_you_mean(f"unknown table [{table}]", table, TABLES))
+        for table, known in KEYS.items():
+            node = data.get(table, {})
+            if isinstance(node, dict):
+                for key in node:
+                    if key not in known:
+                        cfg.warnings.append(
+                            _did_you_mean(f"{table}.{key}: unknown option", key, known)
+                        )
+        if cfg.rules:
+            # loaded lazily: a config without rule options should not import every rule
+            from slopaudit.rules import all_rules
+
+            known_ids = [rule.meta.id for rule in all_rules()]
+            for rule_id in cfg.rules:
+                if rule_id not in known_ids:
+                    cfg.warnings.append(
+                        _did_you_mean(f'rules."{rule_id}": no such rule', rule_id, known_ids)
+                    )
         return cfg
 
     @classmethod
@@ -183,6 +217,11 @@ def _table(data: dict[str, Any], dotted: str) -> dict[str, Any]:
     if not isinstance(node, dict):
         raise ConfigError(f"{dotted}: expected a table")
     return node
+
+
+def _did_you_mean(problem: str, value: str, choices: Any) -> str:
+    close = difflib.get_close_matches(value, list(choices), n=1)
+    return f"{problem}; did you mean {close[0]!r}?" if close else problem
 
 
 def _str_list(table: dict[str, Any], key: str) -> list[str]:
