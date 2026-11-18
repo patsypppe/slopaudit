@@ -8,6 +8,7 @@
 
 | Guides | |
 | --- | --- |
+| [FastAPI + LLM tutorial](tutorial-fastapi.md) | End-to-end security walkthrough: vulnerable app, scan, fix, and CI |
 | [Configuration](configuration.md) | Every `slopaudit.toml` setting |
 | [Beyond scanning](beyond-scanning.md) | Spec checks, generated tests, style drift, regression guard, repair loop |
 | [Suppressing findings](suppressing-findings.md) | Inline comments, baselines, per-rule ignores |
